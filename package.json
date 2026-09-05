@@ -1,6 +1,6 @@
 {
   "name": "@pkboom/opencv-nodejs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Asynchronous OpenCV 4.x nodejs bindings with JavaScript and TypeScript API.",
   "keywords": [
     "opencv",
