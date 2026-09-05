@@ -4,10 +4,12 @@
 name: publish on npmjs
 
 on:
-  # Pushing a version tag publishes. `npm version patch && git push --follow-tags`
-  # is the whole release. Plain pushes to master do nothing, so an ordinary commit
-  # never publishes by accident.
+  # Any push to master builds and tests. The publish step runs only when the
+  # version in package.json is not already on npm, so bumping the version is
+  # what releases; ordinary commits just run CI. Version tags also publish.
   push:
+    branches:
+      - master
     tags:
       - 'v*'
   release:
@@ -56,5 +58,18 @@ jobs:
       # ships it. pnpm is not used here because only the npm CLI implements OIDC.
       - name: Verify npm supports trusted publishing
         run: npm --version
+      - name: Is this version already published?
+        id: check
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          NAME=$(node -p "require('./package.json').name")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION is already on npm - skipping publish."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION is new - publishing."
+          fi
       - name: publish to npmjs
+        if: steps.check.outputs.publish == 'true'
         run: npm publish --access public
