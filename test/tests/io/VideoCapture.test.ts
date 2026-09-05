@@ -52,12 +52,16 @@ if (toTest.io && !process.env.BINDINGS_DEBUG) {
     });
   });
 
+  // Seek precision depends on the video backend: some (e.g. Ubuntu's ffmpeg
+  // build) land on the preceding keyframe rather than the exact frame. Assert
+  // the seek moved forward without overshooting the requested position.
   const expectSeekedNear = (cap: VideoCapture, requestedMsec: number) => {
     const msec = cap.get(cv.CAP_PROP_POS_MSEC);
     const frameIntervalMsec = 1000 / cap.get(cv.CAP_PROP_FPS);
-    expect(Math.abs(msec - requestedMsec)).to.be.at.most(
-      frameIntervalMsec,
-      `seeking to ${requestedMsec}ms landed at ${msec}ms, more than one frame (${frameIntervalMsec}ms) away`,
+    expect(msec, `seeking to ${requestedMsec}ms did not move from ${msec}ms`).to.be.greaterThan(0);
+    expect(msec).to.be.at.most(
+      requestedMsec + frameIntervalMsec,
+      `seeking to ${requestedMsec}ms overshot to ${msec}ms`,
     );
   };
 
