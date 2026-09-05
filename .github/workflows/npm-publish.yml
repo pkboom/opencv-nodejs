@@ -11,6 +11,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # id-token lets GitHub mint the OIDC token npm's trusted publisher verifies,
+    # so no long-lived npm token is needed. The repo default is read-only, so
+    # contents must be restated here.
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: run apt-get update
         run: sudo apt-get update
@@ -39,6 +45,10 @@ jobs:
         run: cd test && pnpm install --frozen-lockfile
       - name: run tests
         run: cd test && pnpm run test
-      - run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      # Published via npm's trusted publisher (OIDC), configured for this repo
+      # and workflow filename on npmjs.com. npm CLI 11.5.1+ is required; Node 24
+      # ships it. pnpm is not used here because only the npm CLI implements OIDC.
+      - name: Verify npm supports trusted publishing
+        run: npm --version
+      - name: publish to npmjs
+        run: npm publish --access public
