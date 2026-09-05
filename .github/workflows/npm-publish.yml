@@ -4,6 +4,12 @@
 name: publish on npmjs
 
 on:
+  # Pushing a version tag publishes. `npm version patch && git push --follow-tags`
+  # is the whole release. Plain pushes to master do nothing, so an ordinary commit
+  # never publishes by accident.
+  push:
+    tags:
+      - 'v*'
   release:
     types: [ created ]
   workflow_dispatch:
