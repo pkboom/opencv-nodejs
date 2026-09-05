@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import assert from 'node:assert';
 import mri from "mri";
-import { Net, Mat, VideoCapture, VideoWriter, Size, Point2, Vec3, Rect } from '@u4/opencv4nodejs';
+import { Net, Mat, VideoCapture, VideoWriter, Size, Point2, Vec3, Rect } from '@pkboom/opencv-nodejs';
 import { cv, getExampleDirname } from "../utils.js";
 
 // # Usage example:  python3 object_detection_yolo.py --video=run.mp4

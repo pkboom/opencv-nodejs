@@ -6,12 +6,12 @@
 
 class ExternalMemTracking {
 public:
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
   static CustomMatAllocator* custommatallocator;
 #endif
 
   static inline void onMatAllocated() {
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
     if (custommatallocator != NULL) {
       custommatallocator->FixupJSMem();
     }

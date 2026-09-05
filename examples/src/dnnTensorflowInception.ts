@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Mat } from '@u4/opencv4nodejs';
+import { Mat } from '@pkboom/opencv-nodejs';
 import { cv, getResourcePath, wait4key } from './utils.js';
 
 async function main() {
   if (!cv.xmodules || !cv.xmodules.dnn) {
-    console.error(`exiting: opencv4nodejs (${cv.version.major}.${cv.version.minor}) compiled without dnn module`);
+    console.error(`exiting: opencv-nodejs (${cv.version.major}.${cv.version.minor}) compiled without dnn module`);
     return;
   }
 

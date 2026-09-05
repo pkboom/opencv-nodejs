@@ -1,11 +1,11 @@
 import path from 'node:path';
-import { cv } from '@u4/opencv4nodejs';
+import { cv } from '@pkboom/opencv-nodejs';
 import { getResourcePath, wait4key } from './utils.js';
 
 
 export async function ocrHMMWords() {
   if (!cv.xmodules.text) {
-    throw new Error('exiting: opencv4nodejs compiled without text module');
+    throw new Error('exiting: opencv-nodejs compiled without text module');
   }
   const dataPath = path.resolve(getResourcePath('text-data'));
   const modelsPath = path.resolve(getResourcePath('text-models'));

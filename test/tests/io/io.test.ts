@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { expect } from 'chai';
-import { Mat } from '@u4/opencv4nodejs';
-import { getDirName } from '@u4/opencv4nodejs';
+import { Mat } from '@pkboom/opencv-nodejs';
+import { getDirName } from '@pkboom/opencv-nodejs';
 import { getTestContext } from '../model.js';
 import { assertDataDeepEquals, assertMetaData } from '../../utils/matTestUtils.js';
 import {

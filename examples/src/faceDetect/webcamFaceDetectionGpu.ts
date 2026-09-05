@@ -1,4 +1,4 @@
-import { Mat } from '@u4/opencv4nodejs';
+import { Mat } from '@pkboom/opencv-nodejs';
 import { cv } from '../utils.js';
 import { runVideoFaceDetection } from './commons.js';
 

@@ -1,10 +1,10 @@
-import { VideoWriter } from '@u4/opencv4nodejs';
+import { VideoWriter } from '@pkboom/opencv-nodejs';
 import { expect } from 'chai';
 import { clearTmpData, fileExists, getTmpDataFilePath } from '../../utils/testUtils';
 import { getTestContext } from '../model';
 import toTest from '../toTest';
 
-if (toTest.io && !process.env.DOCKER_BUILD && !process.env.BINDINGS_DEBUG) {
+if (toTest.io && !process.env.BINDINGS_DEBUG) {
   describe.skip('VideoWriter', () => {
     const { cv } = getTestContext();
 

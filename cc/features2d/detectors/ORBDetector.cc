@@ -26,9 +26,7 @@ NAN_MODULE_INIT(ORBDetector::Init) {
   Nan::SetAccessor(instanceTemplate, Nan::New("fastThreshold").ToLocalChecked(), fastThreshold_getter);
 
   Nan::Set(target, Nan::New("ORBDetector").ToLocalChecked(), FF::getFunction(ctor));
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   ScoreType::init(target);
-#endif
 };
 
 NAN_METHOD(ORBDetector::New) {

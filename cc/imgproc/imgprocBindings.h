@@ -1,6 +1,10 @@
 #include "CvBinding.h"
 #include "imgproc.h"
 #include <opencv2/imgproc.hpp>
+#if CV_VERSION_GREATER_EQUAL(5, 0, 0)
+// goodFeaturesToTrack moved from imgproc to the features module in OpenCV 5.
+#include <opencv2/features2d.hpp>
+#endif
 
 #ifndef __FF_IMGPROCBINDINGS_H_
 #define __FF_IMGPROCBINDINGS_H_
@@ -37,7 +41,6 @@ public:
   }
 };
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
 struct CannyWorker : public CatchCvExceptionWorker {
 public:
   cv::Mat dx;
@@ -69,7 +72,6 @@ public:
   virtual ~CannyWorker() {
   }
 };
-#endif
 
 struct ApplyColorMapWorker : public CatchCvExceptionWorker {
 public:
@@ -83,7 +85,6 @@ public:
   }
 
   bool unwrapRequiredArgs(Nan::NAN_METHOD_ARGS_TYPE info) {
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
     if (info[1]->IsNumber()) {
       return (Mat::Converter::arg(0, &src, info) || FF::IntConverter::optArg(1, &colormap, info));
     }
@@ -91,21 +92,14 @@ public:
     useUserColor = 1;
 
     return (Mat::Converter::arg(0, &src, info) || Mat::Converter::arg(1, &userColor, info));
-#else
-    return (Mat::Converter::arg(0, &src, info) || FF::IntConverter::optArg(1, &colormap, info));
-#endif
   }
 
   std::string executeCatchCvExceptionWorker() {
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
     if (useUserColor) {
       cv::applyColorMap(src, dst, userColor);
     } else {
       cv::applyColorMap(src, dst, colormap);
     }
-#else
-    cv::applyColorMap(src, dst, colormap);
-#endif
     return "";
   }
 
@@ -113,25 +107,6 @@ public:
     return Mat::Converter::wrap(dst);
   }
 };
-
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-// since 4.0.0 cv::undistortPoints has been moved from imgproc to calib3d
-class UndistortPoints : public CvBinding {
-public:
-  virtual ~UndistortPoints() {
-  }
-  void setup() {
-    auto srcPoints = req<Point2::ArrayWithCastConverter<cv::Point2f>>();
-    auto cameraMatrix = req<Mat::Converter>();
-    auto distCoeffs = req<Mat::Converter>();
-    auto destPoints = ret<Point2::ArrayWithCastConverter<cv::Point2f>>("destPoints");
-
-    executeBinding = [=]() {
-      cv::undistortPoints(srcPoints->ref(), destPoints->ref(), cameraMatrix->ref(), distCoeffs->ref(), cameraMatrix->ref());
-    };
-  };
-};
-#endif
 
 class GoodFeaturesToTrack : public CvClassMethodBinding<Mat> {
 public:
@@ -151,9 +126,7 @@ public:
     executeBinding = [=]() {
       cv::goodFeaturesToTrack(
           self->ref(), corners->ref(), maxCorners->ref(), qualityLevel->ref(), minDistance->ref(), mask->ref(), blockSize->ref(),
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
           gradientSize->ref(),
-#endif
           useHarrisDetector->ref(), harrisK->ref());
     };
   };

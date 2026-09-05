@@ -5,9 +5,9 @@
 #include "Point.h"
 #include "Rect.h"
 #include "Size.h"
+#include "legacyObjdetect.h"
 #include "macros.h"
 #include <opencv2/core.hpp>
-#include <opencv2/objdetect.hpp>
 
 #ifndef __FF_HOGDESCRIPTOR_H__
 #define __FF_HOGDESCRIPTOR_H__
@@ -20,7 +20,6 @@ public:
     return "HOGDescriptor";
   }
 
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   class HistogramNormType : public FF::EnumWrap<HistogramNormType> {
   public:
     typedef cv::HOGDescriptor::HistogramNormType Type;
@@ -37,7 +36,6 @@ public:
       return {"L2Hys"};
     }
   };
-#endif
 
   FF_ACCESSORS_PTR(winSize, Size::Converter);
   FF_ACCESSORS_PTR(blockSize, Size::Converter);
@@ -46,11 +44,7 @@ public:
   FF_ACCESSORS_PTR(nbins, FF::IntConverter);
   FF_ACCESSORS_PTR(derivAperture, FF::IntConverter);
   FF_ACCESSORS_PTR(winSigma, FF::DoubleConverter);
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   FF_ACCESSORS_PTR(histogramNormType, HistogramNormType::Converter);
-#else
-  FF_ACCESSORS_PTR(histogramNormType, FF::IntConverter);
-#endif
   FF_ACCESSORS_PTR(L2HysThreshold, FF::DoubleConverter);
   FF_ACCESSORS_PTR(gammaCorrection, FF::BoolConverter);
   FF_ACCESSORS_PTR(nlevels, FF::IntConverter);
@@ -92,11 +86,7 @@ public:
       auto nbins = opt<FF::IntConverter>("nbins", 9);
       auto derivAperture = opt<FF::IntConverter>("derivAperture", 1);
       auto winSigma = opt<FF::DoubleConverter>("winSigma", -1);
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
       auto histogramNormType = opt<HOGDescriptor::HistogramNormType::Converter>("histogramNormType", cv::HOGDescriptor::L2Hys);
-#else
-      auto histogramNormType = opt<FF::IntConverter>("histogramNormType", cv::HOGDescriptor::L2Hys);
-#endif
       auto L2HysThreshold = opt<FF::DoubleConverter>("L2HysThreshold", 0.2);
       auto gammaCorrection = opt<FF::BoolConverter>("gammaCorrection", false);
       auto nlevels = opt<FF::IntConverter>("nlevels", cv::HOGDescriptor::DEFAULT_NLEVELS);

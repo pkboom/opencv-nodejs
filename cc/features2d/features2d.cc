@@ -8,16 +8,19 @@
 #include "KeyPointMatch.h"
 #include "descriptorMatching.h"
 #include "descriptorMatchingKnn.h"
-#include "detectors/AGASTDetector.h"
-#include "detectors/AKAZEDetector.h"
-#include "detectors/BRISKDetector.h"
 #include "detectors/FASTDetector.h"
 #include "detectors/GFTTDetector.h"
-#include "detectors/KAZEDetector.h"
 #include "detectors/MSERDetector.h"
 #include "detectors/ORBDetector.h"
 #include "detectors/SimpleBlobDetector.h"
 #include "features2d.h"
+
+#ifdef HAVE_LEGACY_FEATURE_DETECTORS
+#include "detectors/AGASTDetector.h"
+#include "detectors/AKAZEDetector.h"
+#include "detectors/BRISKDetector.h"
+#include "detectors/KAZEDetector.h"
+#endif
 
 NAN_MODULE_INIT(Features2d::Init) {
   KeyPoint::Init(target);
@@ -25,16 +28,18 @@ NAN_MODULE_INIT(Features2d::Init) {
   DescriptorMatch::Init(target);
   DescriptorMatching::Init(target);
   DescriptorMatchingKnn::Init(target);
-  AGASTDetector::Init(target);
-  AKAZEDetector::Init(target);
-  BRISKDetector::Init(target);
   BFMatcher::Init(target);
   FASTDetector::Init(target);
   GFTTDetector::Init(target);
-  KAZEDetector::Init(target);
   MSERDetector::Init(target);
   ORBDetector::Init(target);
   SimpleBlobDetector::Init(target);
+
+#ifdef HAVE_LEGACY_FEATURE_DETECTORS
+  AGASTDetector::Init(target);
+  AKAZEDetector::Init(target);
+  BRISKDetector::Init(target);
+  KAZEDetector::Init(target);
 
   v8::Local<v8::Object> agastTypes = Nan::New<v8::Object>();
   FF_SET_JS_PROP(agastTypes, AGAST_5_8, Nan::New<v8::Integer>(cv::AgastFeatureDetector::AGAST_5_8));
@@ -58,6 +63,7 @@ NAN_MODULE_INIT(Features2d::Init) {
   FF_SET_JS_PROP(kazeTypes, DIFF_WEICKERT, Nan::New<v8::Integer>(cv::KAZE::DIFF_WEICKERT));
   FF_SET_JS_PROP(kazeTypes, DIFF_CHARBONNIER, Nan::New<v8::Integer>(cv::KAZE::DIFF_CHARBONNIER));
   FF_SET_JS_PROP(target, "KAZE", kazeTypes);
+#endif
 
   v8::Local<v8::Object> fastTypes = Nan::New<v8::Object>();
   FF_SET_JS_PROP(fastTypes, TYPE_5_8, Nan::New<v8::Integer>(cv::FastFeatureDetector::TYPE_5_8));

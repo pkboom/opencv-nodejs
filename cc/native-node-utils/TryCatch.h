@@ -25,7 +25,8 @@ public:
   }
 
   void throwError(v8::Local<v8::Value> message) {
-    Nan::ThrowError(message);
+    // Nan::ThrowError(Local<Value>) throws the value verbatim; a bare string has no .message.
+    Nan::ThrowError(message->IsString() ? Nan::Error(message.As<v8::String>()) : message);
     // need to call ReThrow to prevent this try catch to catch the error thrown by itself
     ReThrow();
   }

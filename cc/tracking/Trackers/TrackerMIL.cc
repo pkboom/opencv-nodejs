@@ -37,10 +37,8 @@ NAN_METHOD(TrackerMIL::New) {
   TrackerMIL* self = new TrackerMIL();
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   self->tracker = cv::legacy::TrackerMIL::create(params);
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  self->tracker = cv::TrackerMIL::create(params);
 #else
-  self->tracker = cv::TrackerMIL::createTracker(params);
+  self->tracker = cv::TrackerMIL::create(params);
 #endif
   self->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());

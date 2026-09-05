@@ -18,14 +18,8 @@ NAN_MODULE_INIT(Imgproc::Init) {
   Nan::SetMethod(target, "getTextSizeAsync", GetTextSizeAsync);
   Nan::SetMethod(target, "applyColorMap", ApplyColorMap);
   Nan::SetMethod(target, "applyColorMapAsync", ApplyColorMapAsync);
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
   Nan::SetMethod(target, "canny", Canny);
   Nan::SetMethod(target, "cannyAsync", CannyAsync);
-#endif
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-  Nan::SetMethod(target, "undistortPoints", UndistortPoints);
-  Nan::SetMethod(target, "undistortPointsAsync", UndistortPointsAsync);
-#endif
   Nan::SetMethod(target, "goodFeaturesToTrack", GoodFeaturesToTrack);
   Nan::SetMethod(target, "goodFeaturesToTrackAsync", GoodFeaturesToTrackAsync);
   Nan::SetMethod(target, "blur", Blur);
@@ -213,8 +207,6 @@ NAN_METHOD(Imgproc::ApplyColorMapAsync) {
                           "Imgproc::ApplyColorMapAsync", info);
 }
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
-
 NAN_METHOD(Imgproc::Canny) {
   FF::executeSyncBinding(std::make_shared<ImgprocBindings::CannyWorker>(),
                          "Imgproc::Canny", info);
@@ -224,18 +216,6 @@ NAN_METHOD(Imgproc::CannyAsync) {
   FF::executeAsyncBinding(std::make_shared<ImgprocBindings::CannyWorker>(),
                           "Imgproc::CannyAsync", info);
 }
-
-#endif
-
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-NAN_METHOD(Imgproc::UndistortPoints) {
-  FF::syncBinding<ImgprocBindings::UndistortPoints>("Imgproc", "UndistortPoints", info);
-}
-
-NAN_METHOD(Imgproc::UndistortPointsAsync) {
-  FF::asyncBinding<ImgprocBindings::UndistortPoints>("Imgproc", "UndistortPoints", info);
-}
-#endif
 
 NAN_METHOD(Imgproc::GoodFeaturesToTrack) {
   FF::syncBinding<ImgprocBindings::GoodFeaturesToTrack>("Imgproc", "GoodFeaturesToTrack", info);

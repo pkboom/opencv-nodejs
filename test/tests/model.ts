@@ -1,7 +1,7 @@
-import { cv as realCV, Mat } from '@u4/opencv4nodejs';
+import { cv as realCV, Mat } from '@pkboom/opencv-nodejs';
 import fs from 'fs';
 import path from 'path';
-import { getDirName } from '@u4/opencv4nodejs';
+import { getDirName } from '@pkboom/opencv-nodejs';
 import generateClassMethodTestsFactory from '../utils/generateClassMethodTests.js';
 
 export type OpenCV = typeof realCV

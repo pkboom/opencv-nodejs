@@ -637,7 +637,7 @@ public:
   cv::Moments returnValue;
 
   std::string executeCatchCvExceptionWorker() {
-    cv::moments(self, binaryImage);
+    returnValue = cv::moments(self, binaryImage);
     return "";
   }
 
@@ -1984,24 +1984,6 @@ public:
   }
 };
 
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-// since 4.0.0 cv::undistort has been moved from imgproc to calib3d
-class Undistort : public CvBinding {
-public:
-  void setup(cv::Mat self) {
-    auto cameraMatrix = req<Mat::Converter>();
-    auto distCoeffs = req<Mat::Converter>();
-    auto cameraMatrixNew = opt<Mat::Converter>("newCameraMatrix", cv::noArray().getMat());
-    auto undistortedMat = ret<Mat::Converter>("undistortedMat");
-
-    executeBinding = [=]() {
-      cv::undistort(self, undistortedMat->ref(), cameraMatrix->ref(), distCoeffs->ref(), cameraMatrixNew->ref());
-    };
-  };
-  virtual ~Undistort() {
-  }
-};
-#endif
 } // namespace MatImgprocBindings
 
 #endif

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import mri from 'mri';
-import * as openCV from '@u4/opencv4nodejs';
-import { Mat, Net, Point2, Rect, Size, Vec3, VideoCapture } from '@u4/opencv4nodejs';
+import * as openCV from '@pkboom/opencv-nodejs';
+import { Mat, Net, Point2, Rect, Size, Vec3, VideoCapture } from '@pkboom/opencv-nodejs';
 import { cv, getCachedFile, getExampleDirname, wait4key } from '../utils.js';
 import NetIdentifier from './NetIdentifier.js';
 

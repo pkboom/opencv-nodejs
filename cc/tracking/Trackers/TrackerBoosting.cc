@@ -37,10 +37,8 @@ NAN_METHOD(TrackerBoosting::New) {
   TrackerBoosting* self = new TrackerBoosting();
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   self->tracker = cv::legacy::TrackerBoosting::create(params);
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  self->tracker = cv::TrackerBoosting::create(params);
 #else
-  self->tracker = cv::TrackerBoosting::createTracker(params);
+  self->tracker = cv::TrackerBoosting::create(params);
 #endif
   self->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());

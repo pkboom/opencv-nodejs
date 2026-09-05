@@ -5,8 +5,6 @@
 #include "TrackerKCF.h"
 #include "TrackerKCFParams.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 Nan::Persistent<v8::FunctionTemplate> TrackerKCF::constructor;
 
 NAN_MODULE_INIT(TrackerKCF::Init) {
@@ -39,15 +37,11 @@ NAN_METHOD(TrackerKCF::New) {
   TrackerKCF* self = new TrackerKCF();
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   self->tracker = cv::legacy::TrackerKCF::create(params);
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  self->tracker = cv::TrackerKCF::create(params);
 #else
-  self->tracker = cv::TrackerKCF::createTracker(params);
+  self->tracker = cv::TrackerKCF::create(params);
 #endif
   self->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());
 };
-
-#endif
 
 #endif

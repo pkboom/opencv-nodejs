@@ -8,7 +8,6 @@ crash.log
 data
 test
 examples
-.travis.yml
 doc
 coverage
 coverage-report

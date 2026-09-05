@@ -1,4 +1,4 @@
-import cv, { Net, Mat } from "@u4/opencv4nodejs";
+import cv, { Net, Mat } from "@pkboom/opencv-nodejs";
 
 const getMaxIndex = (scores: number[]): number => {
     let max = Number.MIN_VALUE;

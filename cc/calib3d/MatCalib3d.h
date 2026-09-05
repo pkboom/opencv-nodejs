@@ -1,5 +1,11 @@
 #include "Mat.h"
 #include <opencv2/calib3d.hpp>
+#if CV_VERSION_GREATER_EQUAL(5, 0, 0)
+// OpenCV 5 redistributed these: chessboard detection landed in objdetect
+// and undistort went back to imgproc.
+#include <opencv2/imgproc.hpp>
+#include <opencv2/objdetect.hpp>
+#endif
 
 #ifndef __FF_MATCALIB3D_H__
 #define __FF_MATCALIB3D_H__
@@ -44,16 +50,12 @@ public:
   static NAN_METHOD(ReprojectImageTo3DAsync);
   static NAN_METHOD(DecomposeHomographyMat);
   static NAN_METHOD(DecomposeHomographyMatAsync);
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
   static NAN_METHOD(FindEssentialMat);
   static NAN_METHOD(FindEssentialMatAsync);
   static NAN_METHOD(RecoverPose);
   static NAN_METHOD(RecoverPoseAsync);
-#endif
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   static NAN_METHOD(Undistort);
   static NAN_METHOD(UndistortAsync);
-#endif
 };
 
 #endif

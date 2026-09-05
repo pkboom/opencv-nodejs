@@ -1,67 +1,39 @@
 #include "macros.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
 // This file defines the list of modules available in current build configuration
 #include <opencv2/opencv_modules.hpp>
 
-// we do not support DNN module for OpenCV 3.2 and lower
-#if CV_VERSION_LOWER_THAN(3, 3, 0)
-#undef HAVE_OPENCV_DNN
-#endif
-
-#else
-// OpenCV < 3.2.0 does not contain opencv_modules.hpp,
-// thus we include the modules based on which libraries
-// are found in OPENCV_LIB_DIR
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_CALIB3D
+// OpenCV 5 renamed several modules, so the HAVE_OPENCV_* macros this binding
+// guards its code with no longer match. The legacy compatibility headers
+// (opencv2/calib3d.hpp, opencv2/features2d.hpp) are still shipped, so map the
+// new macro names back onto the ones used throughout cc/.
+#if defined(HAVE_OPENCV_CALIB) && !defined(HAVE_OPENCV_CALIB3D)
 #define HAVE_OPENCV_CALIB3D
 #endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_FACE
-#define HAVE_OPENCV_FACE
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_FEATURES2D
+
+#if defined(HAVE_OPENCV_FEATURES) && !defined(HAVE_OPENCV_FEATURES2D)
 #define HAVE_OPENCV_FEATURES2D
 #endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_IMGPROC
-#define HAVE_OPENCV_IMGPROC
+
+// The AGAST, BRISK, KAZE and AKAZE detectors ship with features2d on OpenCV 4
+// but were moved to the contrib xfeatures2d module in OpenCV 5, so their
+// bindings follow whichever module actually provides them.
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
+#ifdef HAVE_OPENCV_FEATURES2D
+#define HAVE_LEGACY_FEATURE_DETECTORS
 #endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_HIGHGUI
-#define HAVE_OPENCV_HIGHGUI
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_IMGCODECS
-#define HAVE_OPENCV_IMGCODECS
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_VIDEOIO
-#define HAVE_OPENCV_VIDEOIO
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_ML
-#define HAVE_OPENCV_ML
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_OBJDETECT
-#define HAVE_OPENCV_OBJDETECT
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_PHOTO
-#define HAVE_OPENCV_PHOTO
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_TEXT
-#define HAVE_OPENCV_TEXT
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_TRACKING
-#define HAVE_OPENCV_TRACKING
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_VIDEO
-#define HAVE_OPENCV_VIDEO
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_XFEATURES2D
-#define HAVE_OPENCV_XFEATURES2D
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_XIMGPROC
-#define HAVE_OPENCV_XIMGPROC
-#endif
-#ifdef OPENCV4NODEJS_FOUND_LIBRARY_IMG_HASH
-#define HAVE_OPENCV_IMG_HASH
+#elif defined(HAVE_OPENCV_XFEATURES2D)
+#define HAVE_LEGACY_FEATURE_DETECTORS
 #endif
 
+// CascadeClassifier, HOGDescriptor and DetectionROI moved from objdetect to the
+// contrib xobjdetect module in OpenCV 5. cc/objdetect binds exactly those three.
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
+#ifdef HAVE_OPENCV_OBJDETECT
+#define HAVE_LEGACY_OBJDETECT
+#endif
+#elif defined(HAVE_OPENCV_XOBJDETECT)
+#define HAVE_LEGACY_OBJDETECT
 #endif
 
 #ifdef HAVE_OPENCV_HIGHGUI

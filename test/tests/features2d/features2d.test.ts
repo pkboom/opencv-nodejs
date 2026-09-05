@@ -13,14 +13,14 @@ import toTest from '../toTest';
 if (toTest.features2d) {
   const ctxt = getTestContext();
   const {
-    cv, cvVersionGreaterEqual, getTestImg, getTestMask,
+    cv, getTestImg, getTestMask,
   } = ctxt;
 
   const detectorTests = detectorTestsFactory(ctxt);
 
   describe('AGASTDetector', () => {
-    const TYPE_DEFAULT = cvVersionGreaterEqual(4, 0, 0) ? cv.AGASTDetectorType.OAST_9_16 : 3;
-    const TYPE_CUSTOM = cvVersionGreaterEqual(4, 0, 0) ? cv.AGASTDetectorType.AGAST_7_12d : 1;
+    const TYPE_DEFAULT = cv.AGASTDetectorType.OAST_9_16;
+    const TYPE_CUSTOM = cv.AGASTDetectorType.AGAST_7_12d;
     const defaults = {
       type: TYPE_DEFAULT,
       nonmaxSuppression: true,
@@ -35,10 +35,10 @@ if (toTest.features2d) {
   });
 
   describe('AKAZEDetector', () => {
-    const DIFFUSIVITY_DEFAULT = cvVersionGreaterEqual(4, 0, 0) ? cv.KAZEDiffusivityType.DIFF_PM_G2 : 1;
-    const DIFFUSIVITY_CUSTOM = cvVersionGreaterEqual(4, 0, 0) ? cv.KAZEDiffusivityType.DIFF_WEICKERT : 2;
-    const DESCRIPTOR_TYPE_DEFAULT = cvVersionGreaterEqual(4, 0, 0) ? cv.AKAZEDescriptorType.DESCRIPTOR_MLDB : 5;
-    const DESCRIPTOR_TYPE_CUSTOM = cvVersionGreaterEqual(4, 0, 0) ? cv.AKAZEDescriptorType.DESCRIPTOR_KAZE_UPRIGHT : 2;
+    const DIFFUSIVITY_DEFAULT = cv.KAZEDiffusivityType.DIFF_PM_G2;
+    const DIFFUSIVITY_CUSTOM = cv.KAZEDiffusivityType.DIFF_WEICKERT;
+    const DESCRIPTOR_TYPE_DEFAULT = cv.AKAZEDescriptorType.DESCRIPTOR_MLDB;
+    const DESCRIPTOR_TYPE_CUSTOM = cv.AKAZEDescriptorType.DESCRIPTOR_KAZE_UPRIGHT;
 
     const defaults = {
       diffusivity: DIFFUSIVITY_DEFAULT,
@@ -72,8 +72,8 @@ if (toTest.features2d) {
   });
 
   describe('FASTDetector', () => {
-    const TYPE_DEFAULT = cvVersionGreaterEqual(4, 0, 0) ? cv.FASTDetectorType.TYPE_9_16 : 2;
-    const TYPE_CUSTOM = cvVersionGreaterEqual(4, 0, 0) ? cv.FASTDetectorType.TYPE_7_12 : 1;
+    const TYPE_DEFAULT = cv.FASTDetectorType.TYPE_9_16;
+    const TYPE_CUSTOM = cv.FASTDetectorType.TYPE_7_12;
 
     const defaults = {
       type: TYPE_DEFAULT,
@@ -106,8 +106,8 @@ if (toTest.features2d) {
   });
 
   describe('KAZEDetector', () => {
-    const DIFFUSIVITY_DEFAULT = cvVersionGreaterEqual(4, 0, 0) ? cv.KAZEDiffusivityType.DIFF_PM_G2 : 1;
-    const DIFFUSIVITY_CUSTOM = cvVersionGreaterEqual(4, 0, 0) ? cv.KAZEDiffusivityType.DIFF_WEICKERT : 2;
+    const DIFFUSIVITY_DEFAULT = cv.KAZEDiffusivityType.DIFF_PM_G2;
+    const DIFFUSIVITY_CUSTOM = cv.KAZEDiffusivityType.DIFF_WEICKERT;
 
     const defaults = {
       diffusivity: DIFFUSIVITY_DEFAULT,
@@ -146,8 +146,8 @@ if (toTest.features2d) {
   });
 
   describe('ORBDetector', () => {
-    const SCORE_TYPE_DEFAULT = cvVersionGreaterEqual(4, 0, 0) ? cv.ORBScoreType.HARRIS_SCORE : 0;
-    const SCORE_TYPE_CUSTOM = cvVersionGreaterEqual(4, 0, 0) ? cv.ORBScoreType.FAST_SCORE : 1;
+    const SCORE_TYPE_DEFAULT = cv.ORBScoreType.HARRIS_SCORE;
+    const SCORE_TYPE_CUSTOM = cv.ORBScoreType.FAST_SCORE;
     const defaults = {
       fastThreshold: 20,
       patchSize: 31,

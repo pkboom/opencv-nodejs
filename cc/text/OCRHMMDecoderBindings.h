@@ -51,15 +51,11 @@ public:
   }
 
   std::string executeCatchCvExceptionWorker() {
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
     if (mask.empty()) {
       output_text = decoder->run(img, min_confidence, component_level);
     } else {
       output_text = decoder->run(img, mask, min_confidence, component_level);
     }
-#else
-    decoder->run(img, output_text);
-#endif
     return "";
   }
 
@@ -72,12 +68,10 @@ public:
         Mat::Converter::arg(0, &img, info) || FF::IntConverter::arg(1, &min_confidence, info));
   }
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
   bool unwrapOptionalArgs(Nan::NAN_METHOD_ARGS_TYPE info) {
     return (
         Mat::Converter::optArg(2, &mask, info) || FF::IntConverter::optArg(3, &component_level, info));
   }
-#endif
 };
 
 struct RunWithInfoWorker : public BaseRunWorker {
@@ -91,15 +85,11 @@ public:
   std::vector<float> component_confidences;
 
   std::string executeCatchCvExceptionWorker() {
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
     if (mask.empty()) {
       decoder->run(img, output_text, &component_rects, &component_texts, &component_confidences, component_level);
     } else {
       decoder->run(img, mask, output_text, &component_rects, &component_texts, &component_confidences, component_level);
     }
-#else
-    decoder->run(img, output_text, &component_rects, &component_texts, &component_confidences, component_level);
-#endif
     return "";
   }
 

@@ -1,10 +1,8 @@
 #include "opencv_modules.h"
 
-#ifdef HAVE_OPENCV_TRACKING
+#if defined(HAVE_OPENCV_TRACKING) && CV_VERSION_LOWER_THAN(5, 0, 0)
 
 #include "TrackerGOTURN.h"
-
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
 
 Nan::Persistent<v8::FunctionTemplate> TrackerGOTURN::constructor;
 
@@ -78,16 +76,10 @@ NAN_METHOD(TrackerGOTURN::New) {
   FF_ASSERT_CONSTRUCT_CALL();
 
   TrackerGOTURN* self = new TrackerGOTURN();
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
   self->tracker = cv::TrackerGOTURN::create();
-#else
-  self->tracker = cv::TrackerGOTURN::createTracker();
-#endif
 
   self->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());
 };
-
-#endif
 
 #endif

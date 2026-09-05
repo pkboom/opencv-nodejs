@@ -1,7 +1,7 @@
 #include "NativeNodeUtils.h"
 #include "Point.h"
+#include "legacyObjdetect.h"
 #include "macros.h"
-#include <opencv2/objdetect.hpp>
 
 #ifndef __FF_DETECTIONROI_H__
 #define __FF_DETECTIONROI_H__

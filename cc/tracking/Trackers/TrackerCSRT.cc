@@ -5,8 +5,6 @@
 #include "TrackerCSRT.h"
 #include "TrackerCSRTParams.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 1)
-
 Nan::Persistent<v8::FunctionTemplate> TrackerCSRT::constructor;
 
 NAN_MODULE_INIT(TrackerCSRT::Init) {
@@ -45,7 +43,5 @@ NAN_METHOD(TrackerCSRT::New) {
   self->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());
 };
-
-#endif
 
 #endif

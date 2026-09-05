@@ -1,5 +1,6 @@
 #include "../FeatureDetector.h"
 #include "CvBinding.h"
+#include "legacyDetectors.h"
 #include "macros.h"
 
 #ifndef __FF_KAZEDETECTOR_H__
@@ -17,7 +18,6 @@ public:
     return self;
   }
 
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   class DiffusivityType : public FF::EnumWrap<DiffusivityType> {
   public:
     typedef cv::KAZE::DiffusivityType Type;
@@ -27,25 +27,21 @@ public:
     }
 
     static std::vector<Type> getEnumValues() {
-      return {Type::DIFF_CHARBONNIER, Type::DIFF_PM_G1, Type::DIFF_PM_G2, Type::DIFF_WEICKERT};
+      return {cv::KAZE::DIFF_CHARBONNIER, cv::KAZE::DIFF_PM_G1, cv::KAZE::DIFF_PM_G2,
+              cv::KAZE::DIFF_WEICKERT};
     }
 
     static std::vector<const char*> getEnumMappings() {
       return {"DIFF_CHARBONNIER", "DIFF_PM_G1", "DIFF_PM_G2", "DIFF_WEICKERT"};
     }
   };
-#endif
 
   FF_GETTER_CUSTOM(extended, FF::BoolConverter, self->getExtended());
   FF_GETTER_CUSTOM(upright, FF::BoolConverter, self->getUpright());
   FF_GETTER_CUSTOM(threshold, FF::FloatConverter, self->getThreshold());
   FF_GETTER_CUSTOM(nOctaves, FF::IntConverter, self->getNOctaves());
   FF_GETTER_CUSTOM(nOctaveLayers, FF::IntConverter, self->getNOctaveLayers());
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   FF_GETTER_CUSTOM(diffusivity, KAZEDetector::DiffusivityType::Converter, self->getDiffusivity());
-#else
-  FF_GETTER_CUSTOM(diffusivity, FF::IntConverter, self->getDiffusivity());
-#endif
 
   static NAN_MODULE_INIT(Init);
   static NAN_METHOD(New);
@@ -60,11 +56,7 @@ public:
       auto threshold = opt<FF::DoubleConverter>("threshold", (double)0.001f);
       auto nOctaves = opt<FF::IntConverter>("nOctaves", 4);
       auto nOctaveLayers = opt<FF::IntConverter>("nOctaveLayers", 4);
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
       auto diffusivity = opt<KAZEDetector::DiffusivityType::Converter>("diffusivity", cv::KAZE::DIFF_PM_G2);
-#else
-      auto diffusivity = opt<FF::IntConverter>("diffusivity", cv::KAZE::DIFF_PM_G2);
-#endif
 
       if (applyUnwrappers(info)) {
         return tryCatch.reThrow();

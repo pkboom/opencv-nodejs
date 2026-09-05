@@ -4,6 +4,11 @@
 #ifndef __FF_MACROS_H__
 #define __FF_MACROS_H__
 
+// OpenCV 3.x reached end of support in this binding; only 4.x is built.
+#if CV_VERSION_MAJOR < 4
+#error "opencv-nodejs requires OpenCV 4.0.0 or newer. OpenCV 3.x is no longer supported."
+#endif
+
 #define CV_VERSION_GREATER_EQUAL(major, minor, revision)         \
   (                                                              \
       CV_VERSION_MAJOR > major                                   \
@@ -12,6 +17,16 @@
 
 #define CV_VERSION_LOWER_THAN(major, minor, revision) \
   !(CV_VERSION_GREATER_EQUAL(major, minor, revision))
+
+// OpenCV 5 split a batch of helpers that used to live in imgproc and calib3d
+// (contourArea, fitLine, moments, getRotationMatrix2D, findEssentialMat, the
+// DIST_* enum, ...) out into the new geometry module. They kept namespace cv,
+// so pulling the header in centrally keeps every existing call site valid.
+#if CV_VERSION_GREATER_EQUAL(5, 0, 0)
+#if __has_include(<opencv2/geometry.hpp>)
+#include <opencv2/geometry.hpp>
+#endif
+#endif
 
 /* define getters, custom expression for accessing properties of "self" */
 #define FF_GETTER_CUSTOM(ff_property_name, ff_property_converter, ff_access_property_expr) \

@@ -28,7 +28,7 @@
 #ifdef HAVE_OPENCV_ML
 #include "machinelearning/machinelearning.h"
 #endif
-#ifdef HAVE_OPENCV_OBJDETECT
+#ifdef HAVE_LEGACY_OBJDETECT
 #include "objdetect/objdetect.h"
 #endif
 #ifdef HAVE_OPENCV_PHOTO
@@ -65,7 +65,7 @@ int customCvErrorHandler(int status, const char* func_name, const char* err_msg,
 }
 
 NAN_MODULE_INIT(init) {
-  // can be disabled by defining env variable: OPENCV4NODEJS_DISABLE_EXTERNAL_MEM_TRACKING
+  // can be disabled by defining env variable: OPENCVNODEJS_DISABLE_EXTERNAL_MEM_TRACKING
   ExternalMemTracking::Init(target);
 
   // override cv error handler to prevent printing cv errors and throw std::exception
@@ -121,7 +121,7 @@ NAN_MODULE_INIT(init) {
   Nan::Set(modules, FF::newString("ml"), Nan::New(true));
   MachineLearning::Init(target);
 #endif
-#ifdef HAVE_OPENCV_OBJDETECT
+#ifdef HAVE_LEGACY_OBJDETECT
   Nan::Set(modules, FF::newString("objdetect"), Nan::New(true));
   Objdetect::Init(target);
 #endif
@@ -156,7 +156,7 @@ NAN_MODULE_INIT(init) {
 };
 
 #if NODE_MAJOR_VERSION >= 10
-NAN_MODULE_WORKER_ENABLED(opencv4nodejs, init)
+NAN_MODULE_WORKER_ENABLED(opencv_nodejs, init)
 #else
-NODE_MODULE(opencv4nodejs, init)
+NODE_MODULE(opencv_nodejs, init)
 #endif

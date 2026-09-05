@@ -2,8 +2,8 @@ import path from 'node:path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import cv, { Mat, Rect, Vec3 } from '@u4/opencv4nodejs';
-export { default as cv } from '@u4/opencv4nodejs';
+import cv, { Mat, Rect, Vec3 } from '@pkboom/opencv-nodejs';
+export { default as cv } from '@pkboom/opencv-nodejs';
 import Axios from 'axios';
 import ProgressBar from 'progress';
 import pc from 'picocolors';
@@ -41,7 +41,7 @@ export function getCachedFile(localName: string, url: string, opts?: { notice?: 
       method: 'GET',
       responseType: 'stream',
     });
-    const totalLength = headers['content-length'] || "0";
+    const totalLength = String(headers['content-length'] ?? 0);
     console.log(`Starting download ${localName}`);
     const writer = fs.createWriteStream(localFile);
     if (!opts?.noProgress) {

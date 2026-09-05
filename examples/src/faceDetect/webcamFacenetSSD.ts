@@ -1,4 +1,4 @@
-import { Mat } from '@u4/opencv4nodejs';
+import { Mat } from '@pkboom/opencv-nodejs';
 import { cv, grabFrames } from '../utils.js';
 import { makeRunDetectFacenetSSD } from './commons.js';
 

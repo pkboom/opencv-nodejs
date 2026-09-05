@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import fs from 'node:fs';
 import path from 'node:path';
-import type { Mat } from '@u4/opencv4nodejs';
+import type { Mat } from '@pkboom/opencv-nodejs';
 import { cv, getResourcePath } from './utils.js';
 
 const labeledDataPath = path.join(getResourcePath('ocr-nocommit'), 'letters');

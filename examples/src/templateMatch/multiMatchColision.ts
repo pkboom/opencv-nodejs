@@ -1,4 +1,4 @@
-import cv, { Mat } from '@u4/opencv4nodejs';
+import cv, { Mat } from '@pkboom/opencv-nodejs';
 import { getResourcePath, wait4key } from '../utils.js';
 
 const confidence = 0.60;

@@ -1,6 +1,6 @@
 #include "opencv_modules.h"
 
-#ifdef HAVE_OPENCV_FEATURES2D
+#ifdef HAVE_LEGACY_FEATURE_DETECTORS
 
 #include "BRISKDetector.h"
 

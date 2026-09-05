@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Mat } from '@u4/opencv4nodejs';
+import { Mat } from '@pkboom/opencv-nodejs';
 import { cv, getResourcePath } from './utils.js';
 import { lccs, centerLetterInImage, saveConfusionMatrix } from './OCRTools.js';
 

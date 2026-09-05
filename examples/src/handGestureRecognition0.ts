@@ -1,6 +1,6 @@
 import path from 'node:path';
-import type { Contour, Mat } from '@u4/opencv4nodejs';
-import { Point2 } from '@u4/opencv4nodejs';
+import type { Contour, Mat } from '@pkboom/opencv-nodejs';
+import { Point2 } from '@pkboom/opencv-nodejs';
 import { cv, getResourcePath, grabFrames } from './utils.js';
 
 interface PointWithIdx {

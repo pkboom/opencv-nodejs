@@ -6,7 +6,7 @@ import {
   HOGDescriptorDetectROIRet,
   Point2,
   Rect,
-} from '@u4/opencv4nodejs';
+} from '@pkboom/opencv-nodejs';
 import { getTestContext } from '../model';
 import { assertError, clearTmpData, getTmpDataFilePath } from '../../utils/testUtils';
 import { generateAPITests } from '../../utils/generateAPITests';

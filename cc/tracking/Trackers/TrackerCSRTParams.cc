@@ -4,8 +4,6 @@
 
 #include "TrackerCSRTParams.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 1)
-
 Nan::Persistent<v8::FunctionTemplate> TrackerCSRTParams::constructor;
 
 NAN_MODULE_INIT(TrackerCSRTParams::Init) {
@@ -29,9 +27,7 @@ NAN_MODULE_INIT(TrackerCSRTParams::Init) {
   Nan::SetAccessor(instanceTemplate, FF::newString("num_hog_channels_used"), num_hog_channels_used_getter, num_hog_channels_used_setter);
   Nan::SetAccessor(instanceTemplate, FF::newString("number_of_scales"), number_of_scales_getter, number_of_scales_setter);
   Nan::SetAccessor(instanceTemplate, FF::newString("padding"), padding_getter, padding_setter);
-#if CV_VERSION_GREATER_EQUAL(3, 4, 4)
   Nan::SetAccessor(instanceTemplate, FF::newString("psr_threshold"), psr_threshold_getter, psr_threshold_setter);
-#endif
   Nan::SetAccessor(instanceTemplate, FF::newString("scale_lr"), scale_lr_getter, scale_lr_setter);
   Nan::SetAccessor(instanceTemplate, FF::newString("scale_model_max_area"), scale_model_max_area_getter, scale_model_max_area_setter);
   Nan::SetAccessor(instanceTemplate, FF::newString("scale_sigma_factor"), scale_sigma_factor_getter, scale_sigma_factor_setter);
@@ -57,7 +53,5 @@ NAN_METHOD(TrackerCSRTParams::New) {
   self->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());
 };
-
-#endif
 
 #endif

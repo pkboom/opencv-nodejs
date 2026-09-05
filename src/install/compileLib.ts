@@ -1,449 +1,195 @@
-import { Log, Platfrm, StaticTools, OpenCVBuilder, OpenCVBuildEnv, args2Option, genHelp } from '@u4/opencv-build';
-import type { OpencvModule, OpenCVBuildEnvParams, LogLevels } from '@u4/opencv-build';
-import child_process from 'child_process';
-import fs from 'fs';
+import child_process from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { EOL } from 'node:os';
 import pc from 'picocolors';
-import path from 'path';
-import { EOL } from 'os';
-import { globSync } from "glob";
-import { resolvePath } from '../lib/commons.js';
-import { getOpenCV } from '../lib/cvloader.js';
+import { findOpenCV, getLibraries, installHint, type OpenCVConfig } from './findOpenCV.js';
+import { getDirName } from '../lib/meta.js';
 
-const defaultDir = '/usr/local';
-const defaultLibDir = `${defaultDir}/lib`;
-const defaultIncludeDir = `${defaultDir}/include`;
-const defaultIncludeDirOpenCV4 = `${defaultIncludeDir}/opencv4`;
+const GYP_QUERIES = ['OPENCVNODEJS_INCLUDES', 'OPENCVNODEJS_LIBRARIES'] as const;
+const GYP_ACTIONS = ['build', 'clean', 'configure', 'rebuild', 'install'] as const;
 
-let silenceMode = false;
+type GypQuery = (typeof GYP_QUERIES)[number];
+type GypAction = (typeof GYP_ACTIONS)[number];
 
-function log(level: LogLevels | string, prefix: string, message: string, ...args: unknown[]): void {
-    if (!Log.silence)
-        Log.log(level, prefix, message, ...args);
+const USAGE = `Usage: build-opencv [options] <${[...GYP_ACTIONS, 'info'].join('|')}>
+
+OpenCV 4 or 5 must already be installed by your package manager; this command
+only compiles the bindings against it.
+
+Actions
+  rebuild      clean, configure and build the addon (the usual choice)
+  build        build the addon
+  configure    run the node-gyp configure step only
+  clean        remove build output
+  info         show the detected OpenCV install and exit
+
+Options
+  --jobs <n>          parallel compile jobs, or MAX (default: MAX)
+  --debug             build the Debug configuration
+  --electron          build with electron-rebuild instead of node-gyp
+  --node-gyp-options  extra flags forwarded verbatim to node-gyp
+  --dry-run           print the node-gyp command instead of running it
+  -h, --help          show this message
+
+Environment
+  OPENCV_INCLUDE_DIR  override the detected include directory
+  OPENCV_LIB_DIR      override the detected library directory`;
+
+function describe({ version, source, includeDirs, libDir, modules }: OpenCVConfig): string {
+  return [
+    `${pc.green('OpenCV')} ${pc.yellow(`${version.major}.${version.minor}.${version.revision}`)} via ${pc.green(source)}`,
+    `  includes: ${includeDirs.map((d) => pc.yellow(d)).join(', ')}`,
+    `  libraries: ${pc.yellow(libDir)}`,
+    `  modules (${modules.length}): ${pc.yellow(modules.join(', '))}`,
+  ].join(EOL);
 }
 
-function toBool(value?: string | boolean | number | null) {
-    if (!value)
-        return false;
-    if (typeof value === "boolean")
-        return value;
-    if (typeof value === "number")
-        return value !== 0;
-    if (value === '0' || value === 'false' || value === 'off' || value.startsWith('disa'))
-        return false;
-    return true;
+function fail(message: string): void {
+  console.error(`${EOL}${pc.red('opencv-nodejs:')} ${message}${EOL}`);
+  process.exitCode = 1;
 }
 
-/**
- * @returns global system include paths
- */
-function getDefaultIncludeDirs(/*env: OpenCVBuildEnv*/) {
-    log('info', 'install', 'OPENCV_INCLUDE_DIR is not set, looking for default include dir')
-    if (Platfrm.isWindows) {
-        throw new Error('OPENCV_INCLUDE_DIR has to be defined on windows when auto build is disabled')
+function findExecutable(name: string): string {
+  const onPath = (process.env.PATH || '').split(path.delimiter).some((dir) => {
+    if (!dir) {
+      return false;
     }
-    return [defaultIncludeDir, defaultIncludeDirOpenCV4]
-}
-
-/**
- * @returns return a path like /usr/local/lib
- */
-function getDefaultLibDir(/*env: OpenCVBuildEnv*/) {
-    log('info', 'install', 'OPENCV_LIB_DIR is not set, looking for default lib dir')
-    if (Platfrm.isWindows) {
-        throw new Error('OPENCV_LIB_DIR has to be defined on windows when auto build is disabled')
-    }
-    return defaultLibDir
-}
-
-/**
- * @returns a built lib directory
- */
-function getLibDir(env: OpenCVBuildEnv): string {
-    if (env.isAutoBuildDisabled) {
-        return resolvePath(process.env.OPENCV_LIB_DIR) || getDefaultLibDir();
-    } else {
-        const dir = resolvePath(env.opencvLibDir);
-        if (!dir) {
-            throw Error('failed to resolve opencvLibDir path');
-        }
-        return dir;
-    }
-}
-
-/**
- * convert lib list to existing parameter for the linker
- * @param env 
- * @param libDir 
- * @param libsFoundInDir 
- * @returns 
- */
-function getOPENCV4NODEJS_LIBRARIES(env: OpenCVBuildEnv, libDir: string, libsFoundInDir: OpencvModule[]): string[] {
-    const libs = Platfrm.isWindows
-        ? libsFoundInDir.map(lib => resolvePath(lib.libPath))
-        // dynamically link libs if not on windows
-        : ['-L' + libDir]
-            .concat(libsFoundInDir.map(lib => '-lopencv_' + lib.opencvModule))
-            .concat('-Wl,-rpath,' + libDir)
-
-    if (libs.length > 0) {
-        const dir = path.dirname(libs[0]);
-        const names = libs.map(lib => path.basename(lib))
-        log('info', 'libs', `${EOL}Setting lib from ${pc.green(dir)} : ${names.map(pc.yellow).join(', ')}`)
-    } else {
-        log('info', 'libs', `${EOL}no Libs available`)
-    }
-    return libs;
-}
-
-/**
- * generate all C++ Defines and debug them nicely on screen
- * @param libsFoundInDir selected modules
- * @returns list of defines
- */
-function getOPENCV4NODEJS_DEFINES(libsFoundInDir: OpencvModule[]): string[] {
-    const defines = libsFoundInDir
-        .map(lib => `OPENCV4NODEJS_FOUND_LIBRARY_${lib.opencvModule.toUpperCase()}`)
-    log('info', 'defines', `${EOL}Setting the following defines:`)
-    const longest = Math.max(...defines.map(a => a.length));
-    let next = '';
-    for (const define of defines) {
-        if (next.length > 80) {
-            log('info', 'defines', pc.yellow(next));
-            next = '';
-        }
-        next += define.padEnd(longest + 1, ' ');
-    }
-    if (next)
-        log('info', 'defines', pc.yellow(next));
-    return defines;
-}
-
-/**
- * generate C++ Includes
- * @param env context
- * @returns list of directory to include for C++ compiler
- */
-function getOPENCV4NODEJS_INCLUDES(env: OpenCVBuildEnv): string[] {
-    const { OPENCV_INCLUDE_DIR } = process.env;
-    let explicitIncludeDir = '';
-    if (OPENCV_INCLUDE_DIR) {
-        explicitIncludeDir = resolvePath(OPENCV_INCLUDE_DIR)
-    }
-    let includes: string[] = [];
-    if (env.isAutoBuildDisabled) {
-        if (explicitIncludeDir) {
-            if (explicitIncludeDir.endsWith('opencv4')) {
-                includes = [explicitIncludeDir, path.resolve(explicitIncludeDir, '..')];
-            } else {
-                includes = [explicitIncludeDir, path.resolve(explicitIncludeDir, 'opencv4')];
-            }
-        } else {
-            includes = getDefaultIncludeDirs();
-        }
-    } else {
-        includes = [resolvePath(env.opencvInclude), resolvePath(env.opencv4Include)];
-    }
-    log('info', 'install', `${EOL}Setting the following includes:`)
-    includes.forEach(inc => log('info', 'includes', pc.green(inc)))
-    return includes;
-}
-
-function getExistingNodeModulesBin(dir: string, name: string): string {
-    const binPath = path.join(dir, 'node_modules', '.bin', name);
-    if (fs.existsSync(binPath)) {
+    const names = process.platform === 'win32' ? [`${name}.cmd`, `${name}.exe`, name] : [name];
+    return names.some((n) => fs.existsSync(path.join(dir, n)));
+  });
+  if (onPath) {
+    return name;
+  }
+  for (const start of [getDirName(), process.cwd()]) {
+    let dir = start;
+    for (;;) {
+      const binPath = path.join(dir, 'node_modules', '.bin', name);
+      if (fs.existsSync(binPath)) {
         return binPath;
+      }
+      const parent = path.resolve(dir, '..');
+      if (parent === dir) {
+        break;
+      }
+      dir = parent;
     }
-    return '';
+  }
+  throw new Error(`Cannot find "${name}". Install it with:${EOL}  npm install --save-dev ${name}`);
 }
 
-function getExistingBin(dir: string, name: string): string {
-    const binPath = path.join(dir, name);
-    if (fs.existsSync(binPath)) {
-        return binPath;
-    }
-    return '';
+interface Options {
+  jobs: string;
+  debug: boolean;
+  electron: boolean;
+  dryRun: boolean;
+  nodeGypOptions: string;
 }
 
-export async function compileLib(args: string[]) {
-    let builder: OpenCVBuilder | null = null;
-    let dryRun = false;
-    let JOBS = 'max';
-    const validAction = ['build', 'clean', 'configure', 'rebuild', 'install', 'list', 'remove', 'auto', "OPENCV4NODEJS_DEFINES", "OPENCV4NODEJS_INCLUDES", "OPENCV4NODEJS_LIBRARIES"]
-    const actionOriginal = args[args.length - 1];
-    if (args.includes('--help') || args.includes('-h') || !validAction.includes(actionOriginal)) {
-        console.log(`Usage: build-opencv build|rebuild|configure|install [--version=<version>] [--vscode] [--jobs=<thread>] [--electron] [--node-gyp-options=<options>] [--dry-run] [--flags=<flags>] [--cuda] [--cudaArch=<value>] [--nocontrib] [--nobuild] ${validAction.join('|')}`);
-        console.log(genHelp());
-        return;
+function parseOptions(args: string[]): Options {
+  const opts: Options = { jobs: 'MAX', debug: false, electron: false, dryRun: false, nodeGypOptions: '' };
+  for (let i = 0; i < args.length; i++) {
+    const eq = args[i].indexOf('=');
+    const name = eq === -1 ? args[i] : args[i].slice(0, eq);
+    const nextValue = () => (eq === -1 ? args[++i] ?? '' : args[i].slice(eq + 1));
+    switch (name) {
+      case '--jobs':
+        opts.jobs = nextValue();
+        break;
+      case '--debug':
+        opts.debug = true;
+        break;
+      case '--electron':
+        opts.electron = true;
+        break;
+      case '--dry-run':
+      case '--dryrun':
+        opts.dryRun = true;
+        break;
+      case '--node-gyp-options':
+        opts.nodeGypOptions = nextValue();
+        break;
     }
-    const buildOptions: OpenCVBuildEnvParams = args2Option(args)
+  }
+  return { ...opts, debug: opts.debug || !!process.env.BINDINGS_DEBUG };
+}
 
-    if (actionOriginal === 'list') {
-        const buildDir = StaticTools.getBuildDir(buildOptions);
-        const builds = StaticTools.listBuild(buildDir);
-        if (!builds.length) {
-            console.log(`${pc.red('NO Build available on your system in')} ${pc.green(buildDir)}`);
-        } else {
-            console.log(`${pc.green(builds.length.toString())} Build avilible on your system in ${pc.green(buildDir)}`);
-        }
-        for (const build of builds) {
-            const {dir, date, buildInfo} = build;
-            let line = ` - build ${pc.green(dir)} build on ${pc.red(date.toISOString())}`;
-            if (buildInfo.env.buildWithCuda) {
-                line += ` [${pc.green('CUDA')}]`;
-            }
-            if (buildInfo.env.cudaArch) {
-                line += ` ${pc.green('cuda_arch:' + buildInfo.env.cudaArch)}`;
-            }
-            console.log(line);
-        }
-        return;
-    }
+/** `args` is `process.argv`, so the action is the last element. */
+export async function compileLib(args: string[]): Promise<void> {
+  const action = args[args.length - 1];
 
-    if (actionOriginal.startsWith('OPENCV4NODEJS_')) {
-        silenceMode = true;
-        Log.silence = true;
-    }
-
-    const env = process.env;
-    const npmEnv = StaticTools.readEnvsFromPackageJson() || {};
-    let action = actionOriginal;
-    if (actionOriginal === 'auto') {
-        try {
-            const openCV = getOpenCV({ prebuild: 'latestBuild' });
-            const version = openCV.version;
-            const txt = `${version.major}.${version.minor}.${version.revision}`;
-            console.log(`${pc.yellow(txt)} already ready no build needed.`);
-            return;
-        } catch (_e) {
-            // console.log(_e);
-            // no build available
-        }
-
-        if (toBool(env.OPENCV4NODEJS_DISABLE_AUTOBUILD)) {
-            action = 'rebuild'
-        }
-        if (env.OPENCV4NODEJS_AUTOBUILD_OPENCV_VERSION) {
-            action = 'rebuild'
-        }
-        if (Object.keys(npmEnv).length) {
-            action = 'rebuild';
-        }
-    }
-    const extra = buildOptions.extra || {};
-
-    if (extra.jobs) {
-        JOBS = extra.jobs;
-    }
-
-    if (buildOptions.disableAutoBuild || toBool(env.OPENCV4NODEJS_DISABLE_AUTOBUILD) || npmEnv.disableAutoBuild) {
-        const summery = StaticTools.autoLocatePrebuild();
-        if (!silenceMode) {
-            log('info', 'envAutodetect', `autodetect ${pc.green('%d')} changes`, summery.changes)
-            for (const txt of summery.summery) {
-                log('info', 'envAutodetect', `- ${pc.yellow('%s')}`, txt)
-            }
-        }
-    }
-
-    if (extra['dry-run'] || extra['dryrun']) {
-        dryRun = true;
-    }
-
-    if (!silenceMode) {
-        const K = 'autoBuildFlags' as const;
-        // for (const K in ['autoBuildFlags'] as const) {
-           if (buildOptions[K]) console.log(`using ${K}:`, buildOptions[K]);
-        // }
-    }
-
+  if (GYP_QUERIES.includes(action as GypQuery)) {
     try {
-        builder = new OpenCVBuilder({ ...buildOptions, prebuild: 'latestBuild' });
-    } catch (_e) {
-        // ignore
+      const config = findOpenCV();
+      const values = action === 'OPENCVNODEJS_INCLUDES' ? config.includeDirs : getLibraries(config);
+      // node-gyp splices stdout into the build definition, so nothing else may
+      // be printed there.
+      values.forEach((v) => console.log(v));
+    } catch (e) {
+      fail((e as Error).message);
     }
+    return;
+  }
 
-    if (action === 'auto' && builder) action = 'rebuild';
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(USAGE);
+    return;
+  }
 
-    if (action === 'auto' && !builder) {
-        console.log(`Use 'npx build-opencv rebuild' script to start node-gyp, use --help to check all options.
-or configure configure a opencv4nodejs section in your package.json
-or use OPENCV4NODEJS_* env variable.`)
-        return;
-    }
+  let config: OpenCVConfig;
+  try {
+    config = findOpenCV();
+  } catch (e) {
+    return fail((e as Error).message);
+  }
+  console.log(describe(config));
 
-    if (!builder) {
-        builder = new OpenCVBuilder(buildOptions);
-    }
+  if (action === 'info') {
+    return;
+  }
+  if (!GYP_ACTIONS.includes(action as GypAction)) {
+    return fail(`unknown action ${pc.yellow(action)}${EOL}${EOL}${USAGE}`);
+  }
 
-    if (!silenceMode) {
-        log('info', 'install', `Using openCV ${pc.green('%s')}`, builder.env.opencvVersion)
-    }
-    /**
-     * prepare environment variable
-     */
-    const libDir: string = getLibDir(builder.env);
-    if (!silenceMode) {
-        log('info', 'install', `Using lib dir: ${pc.green('%s')}`, libDir)
-    }
-    //if (!fs.existsSync(libDir))
-    await builder.install();
+  const opts = parseOptions(args);
+  const bin = opts.electron ? 'electron-rebuild' : 'node-gyp';
+  let cmd: string;
+  try {
+    cmd = findExecutable(bin);
+  } catch (e) {
+    return fail((e as Error).message);
+  }
 
-    if (!fs.existsSync(libDir)) {
-        throw new Error(`library dir does not exist: ${pc.green(libDir)}'`)
-    }
+  // Runs under `shell: true`, so a resolved path containing spaces needs quoting.
+  if (/\s/.test(cmd)) {
+    cmd = JSON.stringify(cmd);
+  }
+  cmd += ` ${action} --jobs ${opts.jobs} ${opts.debug ? '--debug' : '--release'}`;
+  if (opts.nodeGypOptions) {
+    cmd += ` ${opts.nodeGypOptions}`;
+  }
 
-    // get module list from auto-build.json
-    const libsInDir: OpencvModule[] = builder.getLibs.getLibs();
-    const libsFoundInDir: OpencvModule[] = libsInDir.filter(lib => lib.libPath)
-    if (!libsFoundInDir.length) {
-        throw new Error(`no OpenCV libraries found in lib dir: ${pc.green(libDir)}`)
-    }
-    log('info', 'install', `${EOL}Found the following libs:`)
-    libsFoundInDir.forEach(lib => log('info', 'install', `${pc.yellow('%s')}: ${pc.green('%s')}`, lib.opencvModule, lib.libPath))
-    const OPENCV4NODEJS_DEFINES = getOPENCV4NODEJS_DEFINES(libsFoundInDir).join(';');
-    const OPENCV4NODEJS_INCLUDES = getOPENCV4NODEJS_INCLUDES(builder.env).join(';');
-    const OPENCV4NODEJS_LIBRARIES = getOPENCV4NODEJS_LIBRARIES(builder.env, libDir, libsFoundInDir).join(';');
+  const cwd = path.join(getDirName(), '..', '..');
+  if (opts.dryRun) {
+    console.log(`${EOL}cd ${cwd.includes(' ') ? `"${cwd}"` : cwd}${EOL}${cmd}${EOL}`);
+    return;
+  }
 
-    process.env['OPENCV4NODEJS_DEFINES'] = OPENCV4NODEJS_DEFINES;
-    process.env['OPENCV4NODEJS_INCLUDES'] = OPENCV4NODEJS_INCLUDES;
-    process.env['OPENCV4NODEJS_LIBRARIES'] = OPENCV4NODEJS_LIBRARIES;
+  console.log(`${EOL}Running ${pc.green(cmd)} in ${pc.yellow(cwd)}${EOL}`);
+  const code = await new Promise<number>((resolve) => {
+    const child = child_process.spawn(cmd, { cwd, shell: true, stdio: 'inherit' });
+    child.on('error', (err) => {
+      console.error(`${pc.red('opencv-nodejs:')} failed to start ${bin}: ${err.message}`);
+      resolve(1);
+    });
+    child.on('close', resolve);
+  });
 
-
-    if (silenceMode) {
-        const outputs = (process.env[actionOriginal] || '').split(/[\n;]/);
-        outputs.forEach(o => console.log(o));
-        return;
-    }
-
-    // see https://github.com/nodejs/node-gyp#command-options for all flags
-    let flags = ' -f binding_old.gyp';
-
-    // process.env.JOBS=JOBS;
-    flags += ` --jobs ${JOBS}`;
-
-    // --target not mapped
-    // --silly, --loglevel=silly	Log all progress to console
-    // --verbose, --loglevel=verbose	Log most progress to console
-    // --silent, --loglevel=silent	Don't log anything to console
-
-    if (process.env.BINDINGS_DEBUG || extra['debug'])
-        flags += ' --debug';
-    else
-        flags += ' --release';
-
-    // --thin=yes
-
-    const cwd = path.join(__dirname, '..');
-
-    // const arch = 'x86_64' / 'x64'
-    // flags += --arch=${arch} --target_arch=${arch}
-    const cmdOptions = extra['node-gyp-options'] || '';
-    flags += ` ${cmdOptions}`;
-
-    const nodegyp = extra.electron ? 'electron-rebuild' : 'node-gyp';
-    let nodegypCmd = '';
-    for (const dir of (process.env.PATH || '').split(path.delimiter)) {
-        nodegypCmd = getExistingBin(dir, nodegyp);
-        if (nodegypCmd) {
-            // no need to use full path
-            nodegypCmd = nodegyp;
-            break;
-        }
-    }
-    if (!nodegypCmd) {
-        for (const startDir in [__dirname, process.cwd()]) {
-            let dir = startDir;
-            while (dir) {
-                nodegypCmd = getExistingNodeModulesBin(dir, nodegyp);
-                if (nodegypCmd)
-                    break;
-                const next = path.resolve(dir, '..');
-                if (next === dir) {
-                    break;
-                }
-                dir = next;
-            }
-            if (nodegypCmd)
-                break;
-        }
-    }
-    if (!nodegypCmd) {
-        const msg = `Please install "${nodegyp}" to build openCV bindings${EOL}npm install --save-dev ${nodegyp}`;
-        throw Error(msg)
-    }
-
-    // flags starts with ' '
-    nodegypCmd += ` ${action}${flags}`;
-
-    log('info', 'install', `Spawning in directory:${cwd} node-gyp process: ${nodegypCmd}`)
-
-    if (extra.vscode) {
-        // const nan = require('nan');
-        // const nativeNodeUtils = require('native-node-utils');
-        // const pblob = promisify(blob)
-
-        const openCvModuleInclude = globSync(path.join(builder.env.opencvSrc, 'modules', '*', 'include').replace(/\\/g, '/'));
-        const openCvContribModuleInclude = globSync(path.join(builder.env.opencvContribSrc, 'modules', '*', 'include').replace(/\\/g, '/'));
-        const cvVersion = builder.env.opencvVersion.split('.');
-        const config = {
-            "name": "opencv4nodejs",
-            "includePath": [
-                // 'Missing node-gyp/Cache/16.13.1/include/node',
-                ...OPENCV4NODEJS_INCLUDES,
-                '${workspaceFolder}/node_modules/nan',
-                '${workspaceFolder}/node_modules/native-node-utils/src',
-                '${workspaceFolder}/cc',
-                '${workspaceFolder}/cc/core',
-                ...openCvModuleInclude,
-                ...openCvContribModuleInclude,
-            ],
-            "defines": [
-                `CV_VERSION_MAJOR=${cvVersion[0]}`,
-                `CV_VERSION_MINOR=${cvVersion[1]}`,
-                `CV_VERSION_REVISION=${cvVersion[2]}`,
-                ...OPENCV4NODEJS_DEFINES],
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            // "compilerArgs": [ "-std=c++11" ]
-        }
-        if (process.platform === 'win32') {
-            config.defines.push('WIN');
-            config.defines.push('_HAS_EXCEPTIONS=1');
-        }
-        console.log(JSON.stringify(config, null, '  '));
-    } else if (dryRun) {
-        let setEnv = 'export ';
-        if (process.platform === 'win32') {
-            setEnv = '$Env:';
-        }
-        console.log('');
-        console.log(`${setEnv}OPENCV4NODEJS_DEFINES="${OPENCV4NODEJS_DEFINES}"`);
-        console.log(`${setEnv}OPENCV4NODEJS_INCLUDES="${OPENCV4NODEJS_INCLUDES}"`);
-        console.log(`${setEnv}OPENCV4NODEJS_LIBRARIES="${OPENCV4NODEJS_LIBRARIES}"`);
-        console.log('');
-        if (cwd.includes(' '))
-            console.log(`cd "${cwd}"`);
-        else
-            console.log(`cd ${cwd}`);
-        console.log(nodegypCmd);
-        console.log('');
-    } else {
-        // for (const key in process.env) {
-        //     if (key.startsWith('OPENCV'))
-        //         console.log(`export ${key}=${process.env[key]}`);
-        // }
-        const child = child_process.exec(nodegypCmd, { maxBuffer: Infinity, cwd }, function callNodegypCmd(error/*, stdout, stderr*/) {
-            // fs.unlinkSync(realGyp);
-            const bin = extra.electron ? 'electron-rebuild' : 'node-gyp';
-            if (error) {
-                console.log(`error: `, error);
-                log('error', 'install', `${bin} failed and return ${error.name} ${error.message} return code: ${error.code}`);
-            } else {
-                log('info', 'install', `${bin} complete successfully`);
-            }
-        })
-        if (child.stdout) child.stdout.pipe(process.stdout)
-        if (child.stderr) child.stderr.pipe(process.stderr)
-    }
+  if (code !== 0) {
+    console.error(`${EOL}${pc.red('opencv-nodejs:')} ${bin} exited with code ${code}.`);
+    console.error(`Check that the OpenCV development headers are installed.${EOL}${installHint()}${EOL}`);
+    process.exitCode = code;
+    return;
+  }
+  console.log(`${EOL}${pc.green('opencv-nodejs:')} ${bin} completed successfully.${EOL}`);
 }
-

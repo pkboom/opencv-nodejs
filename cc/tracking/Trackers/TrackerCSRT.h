@@ -1,7 +1,5 @@
 #include "../Tracker.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 1)
-
 #ifndef __FF_TRACKERCSRT_H__
 #define __FF_TRACKERCSRT_H__
 
@@ -30,4 +28,3 @@ public:
 
 #endif
 
-#endif

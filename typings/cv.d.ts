@@ -145,16 +145,10 @@ export function dangerousEnableCustomMatAllocator(): boolean;
 export function dangerousDisableCustomMatAllocator(): boolean;
 export function getMemMetrics(): { TotalAlloc: number, TotalKnownByJS: number, NumAllocations: number, NumDeAllocations: number };
 
-/**
- * All non-native functions signatures go here.
- * Implementation are injected fron lib/src/index.ts
- */
+/** Non-native signatures; implementations are injected from src/lib/ext/index.ts. */
 
-// drawDetection TextLines type FontParams, type DrawDetectionParams, type DrawParams
-export * from '../types/lib/src/drawUtils';
-
-// dropOverlappingZone getScoreMax toMatTypeName
-export * from '../types/lib/src/misc'
+export * from '../types/lib/ext/drawUtils';
+export * from '../types/lib/ext/misc'
 
 // experimental, need improvements / rewrite
 export function min(src1: Mat, src2: Mat, dst: Mat): Mat;

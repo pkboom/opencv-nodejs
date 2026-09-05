@@ -1,7 +1,7 @@
 import { cv, grabFrames, drawBlueRect } from '../utils.js';
 import loadFacenet from '../dnn/loadFacenet.js';
 import { extractResults } from '../dnn/ssdUtils.js';
-import { Mat, Net, Rect } from '@u4/opencv4nodejs';
+import { Mat, Net, Rect } from '@pkboom/opencv-nodejs';
 
 /**
  * 

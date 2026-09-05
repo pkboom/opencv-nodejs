@@ -16,8 +16,6 @@ if (toTest.core) {
   const {
     cv,
     getTestImg,
-    cvVersionGreaterEqual,
-    cvVersionLowerThan,
   } = getTestContext();
 
   const srcMatData = [
@@ -195,21 +193,6 @@ if (toTest.core) {
       });
     });
 
-    // TODO figure out whats wrong with 3.3.0+
-    (cvVersionGreaterEqual(3, 3, 0) ? it.skip : it)('should normalize range of CV_64F', () => {
-      const mat = new cv.Mat([
-        [0.5, 1000.12345, 1000],
-        [-1000.12345, 123.456, -123.456],
-      ], cv.CV_64F);
-      const normMat = mat.normalize({ normType: cv.NORM_MINMAX, alpha: 0, beta: 10 });
-      const cmpVals = MatValuesComparator(mat, normMat);
-      assertMetaData(normMat)(2, 3, cv.CV_64F);
-      expect(isZeroMat(normMat)).to.be.false;
-      cmpVals((_, normVal) => {
-        expect(normVal).to.be.a('number');
-        expect(normVal).to.be.within(0, 10);
-      });
-    });
   });
 
   describe('getData', () => {
@@ -423,7 +406,7 @@ if (toTest.core) {
     });
   });
 
-  (cvVersionLowerThan(3, 2, 0) ? describe.skip : describe)('rotate', () => {
+  describe('rotate', () => {
     const src = new cv.Mat([
       [1, 0, 0],
       [1, 0, 0],

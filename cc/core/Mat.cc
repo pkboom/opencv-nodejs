@@ -169,10 +169,8 @@ NAN_MODULE_INIT(Mat::Init) {
   Nan::SetPrototypeMethod(ctor, "splitChannels", Split);
   Nan::SetPrototypeMethod(ctor, "splitChannelsAsync", SplitAsync);
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
   Nan::SetPrototypeMethod(ctor, "rotate", Rotate);
   Nan::SetPrototypeMethod(ctor, "rotateAsync", RotateAsync);
-#endif
 
   Nan::SetPrototypeMethod(ctor, "release", Release);
 
@@ -1136,7 +1134,6 @@ NAN_METHOD(Mat::CopyMakeBorderAsync) {
       info);
 }
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
 NAN_METHOD(Mat::Rotate) {
   FF::executeSyncBinding(
       std::make_shared<MatBindings::RotateWorker>(Mat::unwrapSelf(info)),
@@ -1150,7 +1147,6 @@ NAN_METHOD(Mat::RotateAsync) {
       "Mat::RotateAsync",
       info);
 }
-#endif
 
 NAN_METHOD(Mat::AddWeighted) {
   Mat::syncBinding<CoreBindings::AddWeighted>("AddWeighted", info);

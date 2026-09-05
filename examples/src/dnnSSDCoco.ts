@@ -3,10 +3,10 @@ import path from 'node:path';
 import { getResourcePath, drawRect, wait4key } from './utils.js';
 import { classNames } from './data/dnnCocoClassNames.js';
 import { extractResults, Prediction } from './dnn/ssdUtils.js';
-import {cv, Mat, Net, Vec3 } from '@u4/opencv4nodejs';
+import {cv, Mat, Net, Vec3 } from '@pkboom/opencv-nodejs';
 
 if (!cv.xmodules || !cv.xmodules.dnn) {
-  throw new Error('exiting: opencv4nodejs compiled without dnn module');
+  throw new Error('exiting: opencv-nodejs compiled without dnn module');
 }
 
 function classifyImg(net: Net, img: Mat) {

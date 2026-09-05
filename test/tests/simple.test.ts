@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import cv from '@u4/opencv4nodejs';
+import cv from '@pkboom/opencv-nodejs';
 
 describe('static Mat methods', () => {
   it('zeros', () => {

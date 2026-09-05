@@ -1,4 +1,4 @@
-import { Mat, Vec4 } from '@u4/opencv4nodejs';
+import { Mat, Vec4 } from '@pkboom/opencv-nodejs';
 import { assert } from 'chai';
 import { assertPropsWithValue } from './testUtils';
 

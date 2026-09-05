@@ -8,21 +8,15 @@
 #include "./Trackers/TrackerTLD.h"
 #include "tracking.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
 #include "./Trackers/TrackerKCF.h"
 #include "MultiTracker.h"
-#endif
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
 #include "./Trackers/TrackerGOTURN.h"
 #endif
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
 #include "./Trackers/TrackerMOSSE.h"
-#endif
-#if CV_VERSION_GREATER_EQUAL(3, 4, 1)
 #include "./Trackers/TrackerCSRT.h"
-#endif
 
 #if CV_VERSION_GREATER_EQUAL(4, 7, 0)
 #include "./Trackers/TrackerNano.h"
@@ -34,7 +28,6 @@ NAN_MODULE_INIT(Tracking::Init) {
   TrackerMIL::Init(target);
   TrackerTLD::Init(target);
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
   TrackerKCF::Init(target);
   MultiTracker::Init(target);
   v8::Local<v8::Object> trackerKCFModes = Nan::New<v8::Object>();
@@ -42,20 +35,15 @@ NAN_MODULE_INIT(Tracking::Init) {
   FF_SET_JS_PROP(trackerKCFModes, CN, Nan::New<v8::Integer>(cv::TrackerKCF::MODE::CN));
   FF_SET_JS_PROP(trackerKCFModes, CUSTOM, Nan::New<v8::Integer>(cv::TrackerKCF::MODE::CUSTOM));
   Nan::Set(target, FF::newString("trackerKCFModes"), trackerKCFModes);
-#endif
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
   TrackerGOTURN::Init(target);
 #endif
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
   TrackerMOSSE::Init(target);
-#endif
-#if CV_VERSION_GREATER_EQUAL(3, 4, 1)
   TrackerCSRT::Init(target);
-#endif
 
-#if CV_VERSION_GREATER_EQUAL(4, 7 , 0)
+#if CV_VERSION_GREATER_EQUAL(4, 7, 0)
   TrackerNano::Init(target);
 #endif
 };

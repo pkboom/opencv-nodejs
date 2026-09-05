@@ -109,10 +109,6 @@ void MatImgproc::Init(v8::Local<v8::FunctionTemplate> ctor) {
   Nan::SetPrototypeMethod(ctor, "cornerEigenValsAndVecsAsync", CornerEigenValsAndVecsAsync);
   Nan::SetPrototypeMethod(ctor, "integral", Integral);
   Nan::SetPrototypeMethod(ctor, "integralAsync", IntegralAsync);
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-  Nan::SetPrototypeMethod(ctor, "undistort", Undistort);
-  Nan::SetPrototypeMethod(ctor, "undistortAsync", UndistortAsync);
-#endif
   Nan::SetPrototypeMethod(ctor, "goodFeaturesToTrack", GoodFeaturesToTrack);
   Nan::SetPrototypeMethod(ctor, "goodFeaturesToTrackAsync", GoodFeaturesToTrackAsync);
   Nan::SetPrototypeMethod(ctor, "blur", Blur);
@@ -836,16 +832,6 @@ NAN_METHOD(MatImgproc::IntegralAsync) {
       "Mat::IntegralAsync",
       info);
 }
-
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-NAN_METHOD(MatImgproc::Undistort) {
-  Mat::syncBinding<MatImgprocBindings::Undistort>("Undistort", info);
-}
-
-NAN_METHOD(MatImgproc::UndistortAsync) {
-  Mat::asyncBinding<MatImgprocBindings::Undistort>("Undistort", info);
-}
-#endif
 
 NAN_METHOD(MatImgproc::GoodFeaturesToTrack) {
   Mat::syncBinding<ImgprocBindings::GoodFeaturesToTrack>("GoodFeaturesToTrack", info);

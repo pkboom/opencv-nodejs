@@ -1,5 +1,5 @@
 // using default import
-import cv from '@u4/opencv4nodejs';
+import cv from '@pkboom/opencv-nodejs';
 import { cv_imshow, cv_setWindowProperty, getResourcePath, wait4key } from './utils.js';
 
 export async function applyColorMap() {

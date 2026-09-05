@@ -3,8 +3,6 @@
 #include "macros.h"
 #include <opencv2/face.hpp>
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
-
 #ifndef __FF_FACEMARKLBFPARAMS_H__
 #define __FF_FACEMARKLBFPARAMS_H__
 
@@ -58,4 +56,3 @@ public:
 
 #endif
 
-#endif

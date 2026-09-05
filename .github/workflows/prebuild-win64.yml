@@ -5,36 +5,24 @@ on:
     branches: [ "master", "dev", "*" ]
     paths:
       - "cc/**"
-      - "install/**"
-      - "lib/**"
+      - "src/**"
+      - "bin/**"
       - "test/**"
       - "typings/**"
+      - "binding.gyp"
       - "package.json"
       - ".github/workflows/prebuild-win64.yml"
   pull_request:
     branches: [ "master" ]
     paths:
       - "cc/**"
-      - "install/**"
-      - "lib/**"
+      - "src/**"
+      - "bin/**"
       - "test/**"
       - "typings/**"
+      - "binding.gyp"
       - "package.json"
       - ".github/workflows/prebuild-win64.yml"
-
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
-  # define common env value no more needed since V 6.2.2
-  # OPENCV_INCLUDE_DIR: c:\tools\opencv\build\include
-  # OPENCV_LIB_DIR: c:\tools\opencv\build\x64\vc14\lib
-  # OPENCV_BIN_DIR: c:\tools\opencv\build\x64\vc14\bin
-  OPENCV4NODEJS_DISABLE_AUTOBUILD: 1
-  OPENCV_BUILD_ROOT: D:\a\opencv\
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
 
 permissions:
   contents: read
@@ -43,60 +31,51 @@ jobs:
   build:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
-        opencv_version:
-          # - 4.10.0
-          # - 4.9.0
-          # - 4.8.0
-          - 4.7.0
-          - 4.6.0
-          # - 4.5.5 # 2019-12-23 ubuntu 22.04
-          ###- 4.5.1 # raspberry Pi version
-          # - 4.2.0 # 2019-12-23 ubuntu 20.04
-          # - 3.4.16
         node_version:
-          # - 16
-          # - 18
-          # - 20
-          - 22
+          - 24
+          - 26
         architecture:
           - x64
     steps:
     - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@v3
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.3.0
-    - uses: actions/setup-node@v4
+        version: 10
+    - name: Install Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node_version }}
         architecture: ${{ matrix.architecture }}
         cache: 'pnpm'
-    
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
+    # choco's opencv formula gives whatever OpenCV version it currently ships;
+    # we no longer pin an OpenCV version here.
     - name: Install OpenCV
-      run: |
-        choco install opencv -y --version ${{ matrix.opencv_version }}
-    # - name: add path to PATH environment variable
-    #   uses: myci-actions/export-env-var-powershell@1
-    #   with:
-    #    name: PATH
-    #    value: $env:PATH;$env:OPENCV_BIN_DIR
-     
-    - name: run pnpm install
-      run: pnpm install --frozen-lockfile
+      run: choco install opencv -y
 
-    - name: pnpm run prepack
-      run: pnpm run prepack
+    # Skip lifecycle scripts: the addon is built explicitly below, after the
+    # TypeScript in this checkout has been compiled.
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile --ignore-scripts
 
-    - name: build native code
-      run: npx node-gyp rebuild
+    - name: Compile TypeScript
+      run: pnpm run build
 
-    - name: install deps in test
+    - name: Show detected OpenCV
+      run: node bin/install.js info
+
+    - name: Build native code
+      run: node bin/install.js rebuild
+
+    - name: Install test dependencies
       working-directory: ./test
       run: pnpm install --frozen-lockfile
 
-    - name: run test-appveyor test
+    - name: Run tests
       working-directory: ./test
       run: pnpm run test-appveyor

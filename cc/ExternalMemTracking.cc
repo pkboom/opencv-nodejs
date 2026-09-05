@@ -1,20 +1,20 @@
 #include "ExternalMemTracking.h"
 #include <iostream>
 
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
 CustomMatAllocator* ExternalMemTracking::custommatallocator = NULL;
 #endif
 
 NAN_MODULE_INIT(ExternalMemTracking::Init) {
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
   try {
-    char* env = std::getenv("OPENCV4NODEJS_DISABLE_EXTERNAL_MEM_TRACKING");
+    char* env = std::getenv("OPENCVNODEJS_DISABLE_EXTERNAL_MEM_TRACKING");
     if (env == NULL && custommatallocator == NULL) {
       custommatallocator = new CustomMatAllocator();
       cv::Mat::setDefaultAllocator(custommatallocator);
     }
   } catch (...) {
-    printf("ExternalMemTracking::Init - fatal exception while trying to read env: OPENCV4NODEJS_DISABLE_EXTERNAL_MEM_TRACKING");
+    printf("ExternalMemTracking::Init - fatal exception while trying to read env: OPENCVNODEJS_DISABLE_EXTERNAL_MEM_TRACKING");
   }
 #endif
   Nan::SetMethod(target, "isCustomMatAllocatorEnabled", IsCustomMatAllocatorEnabled);
@@ -30,7 +30,7 @@ NAN_METHOD(ExternalMemTracking::GetMemMetrics) {
   int64_t NumAllocations = -1;
   int64_t NumDeAllocations = -1;
 
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
   if (ExternalMemTracking::custommatallocator != NULL) {
     TotalAlloc = ExternalMemTracking::custommatallocator->readtotalmem();
     TotalKnownByJS = ExternalMemTracking::custommatallocator->readmeminformed();
@@ -51,7 +51,7 @@ NAN_METHOD(ExternalMemTracking::GetMemMetrics) {
 
 NAN_METHOD(ExternalMemTracking::IsCustomMatAllocatorEnabled) {
   bool allocatorOn = false;
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
   if (ExternalMemTracking::custommatallocator != NULL) {
     allocatorOn = true;
   }
@@ -61,7 +61,7 @@ NAN_METHOD(ExternalMemTracking::IsCustomMatAllocatorEnabled) {
 
 NAN_METHOD(ExternalMemTracking::DangerousEnableCustomMatAllocator) {
   bool success = false;
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
   if (ExternalMemTracking::custommatallocator == NULL) {
     ExternalMemTracking::custommatallocator = new CustomMatAllocator();
     cv::Mat::setDefaultAllocator(ExternalMemTracking::custommatallocator);
@@ -73,7 +73,7 @@ NAN_METHOD(ExternalMemTracking::DangerousEnableCustomMatAllocator) {
 
 NAN_METHOD(ExternalMemTracking::DangerousDisableCustomMatAllocator) {
   bool success = false;
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
   if (ExternalMemTracking::custommatallocator != NULL) {
     CustomMatAllocator* allocator = ExternalMemTracking::custommatallocator;
 

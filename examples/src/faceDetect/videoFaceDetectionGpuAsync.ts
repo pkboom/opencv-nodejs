@@ -1,10 +1,6 @@
-import { Mat } from '@u4/opencv4nodejs';
+import { Mat } from '@pkboom/opencv-nodejs';
 import { cv, getResourcePath } from '../utils.js';
 import { runVideoFaceDetectionAsync } from './commons.js';
-
-if (cv.version.minor === 4) {
-  console.log('Warning: It seems like opencv 3.4 does not run the opencl version of detectMultiScale.');
-}
 
 const videoFile = getResourcePath('people.mp4');
 

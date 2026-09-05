@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
-import { Mat, Point2, Point3, Vec2 } from '@u4/opencv4nodejs';
+import { Mat, Point2, Point3, Vec2 } from '@pkboom/opencv-nodejs';
 import asyncHooks from 'async_hooks';
 import { getTestContext, TestContext } from '../model';
 import {
@@ -231,15 +231,16 @@ if (toTest.core) {
     });
 
     it('should throw when the argument is not integer', () => {
-      const expectError = (fn: { (): void; (): void; (): void; }, msg: string) => {
-        let err;
+      const expectError = (fn: () => void, msg: string) => {
+        let err: unknown;
         try {
           fn();
         } catch (e) {
           err = e;
         }
 
-        expect(err).to.be.equal(msg);
+        expect(err).to.be.instanceOf(Error);
+        expect((err as Error).message).to.equal(msg);
       };
 
       expectError(
@@ -262,7 +263,7 @@ if (toTest.core) {
 
   describe('class constructor call', () => {
     it('should throw errors if we call a constructor without "new"', () => {
-      let err;
+      let err: unknown;
 
       try {
       // @ts-expect-error must be call with new keyword
@@ -271,7 +272,8 @@ if (toTest.core) {
         err = e;
       }
 
-      expect(err).to.be.equal('Mat::New - constructor has to be called with "new" keyword');
+      expect(err).to.be.instanceOf(Error);
+      expect((err as Error).message).to.equal('Mat::New - constructor has to be called with "new" keyword');
     });
   });
 
@@ -282,7 +284,7 @@ if (toTest.core) {
         const hook = asyncHooks.createHook({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
           init: (_asyncId, type, _triggerAsyncId, _resource) => {
-            if (type.indexOf('opencv4nodejs') === 0) {
+            if (type.indexOf('opencv-nodejs') === 0) {
               typeFound = true;
               hook.disable();
             }

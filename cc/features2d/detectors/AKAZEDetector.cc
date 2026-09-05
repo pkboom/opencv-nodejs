@@ -1,6 +1,6 @@
 #include "opencv_modules.h"
 
-#ifdef HAVE_OPENCV_FEATURES2D
+#ifdef HAVE_LEGACY_FEATURE_DETECTORS
 
 #include "AKAZEDetector.h"
 
@@ -24,9 +24,7 @@ NAN_MODULE_INIT(AKAZEDetector::Init) {
   Nan::SetAccessor(instanceTemplate, Nan::New("diffusivity").ToLocalChecked(), diffusivity_getter);
 
   Nan::Set(target, Nan::New("AKAZEDetector").ToLocalChecked(), FF::getFunction(ctor));
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   DescriptorType::init(target);
-#endif
 };
 
 NAN_METHOD(AKAZEDetector::New) {

@@ -28,8 +28,6 @@ struct LoadOCRHMMClassifierNMWorker : public LoadOCRHMMClassifierWorker {
   }
 };
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 struct LoadOCRHMMClassifierCNNWorker : public LoadOCRHMMClassifierWorker {
   virtual ~LoadOCRHMMClassifierCNNWorker() {
   }
@@ -63,8 +61,6 @@ public:
         FF::StringConverter::arg(0, &vocabulary, info) || FF::StringArrayConverter::arg(1, &lexicon, info));
   }
 };
-
-#endif
 
 } // namespace TextBindings
 

@@ -42,16 +42,12 @@ void MatCalib3d::Init(v8::Local<v8::FunctionTemplate> ctor) {
   Nan::SetPrototypeMethod(ctor, "reprojectImageTo3DAsync", ReprojectImageTo3DAsync);
   Nan::SetPrototypeMethod(ctor, "decomposeHomographyMat", DecomposeHomographyMat);
   Nan::SetPrototypeMethod(ctor, "decomposeHomographyMatAsync", DecomposeHomographyMatAsync);
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
   Nan::SetPrototypeMethod(ctor, "findEssentialMat", FindEssentialMat);
   Nan::SetPrototypeMethod(ctor, "findEssentialMatAsync", FindEssentialMatAsync);
   Nan::SetPrototypeMethod(ctor, "recoverPose", RecoverPose);
   Nan::SetPrototypeMethod(ctor, "recoverPoseAsync", RecoverPoseAsync);
-#endif
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   Nan::SetPrototypeMethod(ctor, "undistort", Undistort);
   Nan::SetPrototypeMethod(ctor, "undistortAsync", UndistortAsync);
-#endif
 };
 
 NAN_METHOD(MatCalib3d::Rodrigues) {
@@ -306,8 +302,6 @@ NAN_METHOD(MatCalib3d::DecomposeHomographyMatAsync) {
       info);
 }
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 NAN_METHOD(MatCalib3d::FindEssentialMat) {
   FF::executeSyncBinding(
       std::make_shared<MatCalib3dBindings::FindEssentialMatWorker>(Mat::unwrapSelf(info)),
@@ -336,9 +330,6 @@ NAN_METHOD(MatCalib3d::RecoverPoseAsync) {
       info);
 }
 
-#endif
-
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
 NAN_METHOD(MatCalib3d::Undistort) {
   Mat::syncBinding<MatCalib3dBindings::Undistort>("Undistort", info);
 }
@@ -346,6 +337,5 @@ NAN_METHOD(MatCalib3d::Undistort) {
 NAN_METHOD(MatCalib3d::UndistortAsync) {
   Mat::asyncBinding<MatCalib3dBindings::Undistort>("Undistort", info);
 }
-#endif
 
 #endif

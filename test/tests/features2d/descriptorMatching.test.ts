@@ -4,7 +4,7 @@ import { getTestContext } from '../model';
 import toTest from '../toTest';
 
 if (toTest.features2d) {
-  const { cv, cvVersionLowerThan, getTestImg } = getTestContext();
+  const { cv, getTestImg } = getTestContext();
 
   let kazeKps: KeyPoint[];
   let kazeDesc: Mat;
@@ -84,7 +84,7 @@ if (toTest.features2d) {
     });
   });
 
-  (cvVersionLowerThan(3, 2, 0) ? describe.skip : describe)('matchBruteForceHammingLut', () => {
+  describe('matchBruteForceHammingLut', () => {
     it('matchBruteForceHammingLut', () => {
       const matches = cv.matchBruteForceHammingLut(orbDesc, orbDesc);
       expect(orbKps.length).to.be.above(0);
@@ -100,7 +100,7 @@ if (toTest.features2d) {
     });
   });
 
-  (cvVersionLowerThan(3, 2, 0) ? describe.skip : describe)('matchBruteForceSL2', () => {
+  describe('matchBruteForceSL2', () => {
     it('matchBruteForceSL2', () => {
       const matches = cv.matchBruteForceSL2(orbDesc, orbDesc);
       expect(orbKps.length).to.be.above(0);

@@ -1,99 +1,42 @@
-# @u4/opencv4nodejs
+# @pkboom/opencv-nodejs
 
-[![NPM Version](https://img.shields.io/npm/v/@u4/opencv4nodejs.svg?style=flat)](https://www.npmjs.org/package/@u4/opencv4nodejs)
+[![NPM Version](https://img.shields.io/npm/v/@pkboom/opencv-nodejs.svg?style=flat)](https://www.npmjs.org/package/@pkboom/opencv-nodejs)
 
 ## Getting started
 
-Opencv4nodejs can be linked to a prebuild openCV 3 or 4. or can build its own openCV using [@u4/opencv-build](https://www.npmjs.com/package/@u4/opencv-build),
-In this case, you have to choose which version you want to link.
+opencv-nodejs is zero-configuration: install OpenCV from your platform's package manager, then install this module — that's it. There is no source build of OpenCV, no Docker image, and nothing to configure in `package.json`.
 
-> Since version 7, you should be able to use this module directly without any configuration if you have OpenCV installed from your package manager (Chocolatey / Brew / apt).
-
-### To use your OWN openCV build
-
-**3 way to use your own openCV (Without automatic building)**
-
-#### 1) Environment variable
-Define environment variable:
-- `OPENCV4NODEJS_DISABLE_AUTOBUILD`=`1`
-
-If you do not install openCV with a common setup like chocolate, apt or brew, you may need to also define:
- `OPENCV_INCLUDE_DIR`=`include path` , `OPENCV_LIB_DIR`=`lib path`, `OPENCV_BIN_DIR`=`binary path`
-
-#### 2) package.json
-Define an opencv4nodejs section in your package.json like:
-```json
-"opencv4nodejs": {
-  "disableAutoBuild": "1"
-}
-```
-If you do not install openCV with a common setup like chocolatey, apt or brew, you may need to also define:
-  `"OPENCV_INCLUDE_DIR"`, `"OPENCV_LIB_DIR"`, `"OPENCV_BIN_DIR"`
-
-#### 3) use build-opencv
-Call `build-opencv` once like:
 ```bash
-npm link
-build-opencv --nobuild rebuild
+# macOS (OpenCV 5)
+brew install opencv
+
+# macOS (OpenCV 4)
+brew install opencv@4
+
+# Debian / Ubuntu (OpenCV 4.x)
+sudo apt install libopencv-dev
+
+# Windows (OpenCV 4.x)
+choco install opencv
 ```
 
-If you do not install openCV with a common setup like chocolatey, apt or brew, you may need to also define:
 ```bash
-npm link
-build-opencv --incDir /usr/include/opencv4/ --libDir /lib/x86_64-linux-gnu/ --binDir=/usr/bin/ --nobuild rebuild
+npm install --save @pkboom/opencv-nodejs
 ```
 
-### To build openCV using the built-in builder
+`npm install` builds the native addon automatically against whichever OpenCV it finds. See [How to install](#how-to-install) for the full details, requirements, and troubleshooting.
 
-If you want to build OpenCV define the environment variable `OPENCV_BUILD_ROOT` to speed up your development, so openCV build will be processed out of your node_modules
+![opencv-nodejs](https://user-images.githubusercontent.com/31125521/37272906-67187fdc-25d8-11e8-9704-40e9e94c1e80.jpg)
 
-ex:
-```bash
-OPENCV_BUILD_ROOT=~/opencv
-```
+[![npm download](https://img.shields.io/npm/dm/@pkboom/opencv-nodejs.svg?style=flat)](https://www.npmjs.com/package/@pkboom/opencv-nodejs)
+[![node version](https://img.shields.io/badge/node.js-%3E=_24-green.svg?style=flat)](http://nodejs.org/download/)
 
-**3 ways to build openCV 4.6.0**
-
-#### 1) Environment variable
-Define environment variable:
-- `OPENCV4NODEJS_AUTOBUILD_OPENCV_VERSION`="4.9.0"
-
-#### 2) package.json
-Define an opencv4nodejs section in your package.json like:
-```json
-"opencv4nodejs" {
-  "autoBuildOpencvVersion": "4.6.0",
-}
-```
-
-#### 3) use build-opencv
-Call `build-opencv` once like:
-```bash
-npm link
-build-opencv --version 4.6.0 rebuild
-```
-
-** make it portable use Docker **
-You can also use my [docker image](https://hub.docker.com/repository/docker/urielch/opencv-nodejs) I use it on my raspberry Pi 4, and build them on an ~~Oracle Ampere~~ (they delete all my stuff and do not reply to my requests) Mac Mini M1
-
-check Docker sample below
-
-## for advanced option
-
-- [@u4/opencv-build](https://github.com/UrielCh/npm-opencv-build) for info.
-
-![opencv4nodejs](https://user-images.githubusercontent.com/31125521/37272906-67187fdc-25d8-11e8-9704-40e9e94c1e80.jpg)
-
-[![npm download](https://img.shields.io/npm/dm/opencv4nodejs.svg?style=flat)](https://www.npmjs.com/package/@u4/opencv4nodejs)
-[![node version](https://img.shields.io/badge/node.js-%3E=_12-green.svg?style=flat)](http://nodejs.org/download/)
-
-**opencv4nodejs allows you to use the native OpenCV library in nodejs. Besides a synchronous API the package provides an asynchronous API, which allows you to build non-blocking and multithreaded computer vision tasks. opencv4nodejs supports OpenCV 3 and OpenCV 4.**
+**opencv-nodejs allows you to use the native OpenCV library in nodejs. Besides a synchronous API the package provides an asynchronous API, which allows you to build non-blocking and multithreaded computer vision tasks. opencv-nodejs supports OpenCV 4 and OpenCV 5.**
 
 **The ultimate goal of this project is to provide a comprehensive collection of nodejs bindings to the API of OpenCV and the OpenCV-contrib modules. To get an overview of the currently implemented bindings, have a look at the [type declarations](https://github.com/urielch/opencv4nodejs/tree/master/typings) of this package. Furthermore, contribution is highly appreciated. If you want to add missing bindings check out the [contribution guide](https://github.com/urielch/opencv4nodejs/tree/master/CONTRIBUTING.md).**
 
 - **[Examples](#examples)**
 - **[How to install](#how-to-install)**
-- **[Usage with Docker](#usage-with-docker)**
 - **[Usage with Electron](#usage-with-electron)**
 - **[Usage with NW.js](#usage-with-nwjs)**
 - **[Quick Start](#quick-start)**
@@ -125,7 +68,7 @@ Check out [Node.js + OpenCV for Face Recognition](https://medium.com/@muehler.v/
 
 Check out [Node.js + face-recognition.js : Simple and Robust Face Recognition using Deep Learning](https://medium.com/@muehler.v/node-js-face-recognition-js-simple-and-robust-face-recognition-using-deep-learning-ea5ba8e852).
 
-[![IMAGE ALT TEXT](https://user-images.githubusercontent.com/31125521/35453884-055f3bde-02cc-11e8-8fa6-945f320652c3.jpg)](https://www.youtube.com/watch?v=ArcFHpX-usQ "Nodejs Face Recognition using face-recognition.js and opencv4nodejs")
+[![IMAGE ALT TEXT](https://user-images.githubusercontent.com/31125521/35453884-055f3bde-02cc-11e8-8fa6-945f320652c3.jpg)](https://www.youtube.com/watch?v=ArcFHpX-usQ "Nodejs Face Recognition using face-recognition.js and opencv-nodejs")
 
 ### Hand Gesture Recognition
 
@@ -168,7 +111,7 @@ Check out [Machine Learning with OpenCV and JavaScript: Recognizing Handwritten 
 ![plotbgr](https://user-images.githubusercontent.com/31125521/29995016-1b847970-8fdf-11e7-9316-4eb0fd550adc.jpg)
 ![plotgray](https://user-images.githubusercontent.com/31125521/29995015-1b83e06e-8fdf-11e7-8fa8-5d18326b9cd3.jpg)
 
-### Boiler plate for combination of opencv4nodejs, express and websockets
+### Boiler plate for combination of opencv-nodejs, express and websockets
 
 [opencv4nodejs-express-websockets](https://github.com/Mudassir-23/opencv4nodejs-express-websockets) - Boilerplate express app for getting started on opencv with nodejs and to live stream the video through websockets.
 
@@ -182,177 +125,85 @@ Check out [Automating lights with Computer Vision & NodeJS](https://medium.com/s
 
 ## How to install
 
-``` bash
-npm install --save @u4/opencv4nodejs
+```bash
+npm install --save @pkboom/opencv-nodejs
 ```
+
+The module's `install` lifecycle script runs `node bin/install.js rebuild`, which detects your OpenCV install (via Homebrew, pkg-config, or the usual distro locations) and compiles the native addon against it with node-gyp. There is no source build of OpenCV and nothing to configure — just install OpenCV first, from your package manager.
 
 Native node modules are built via node-gyp, which already comes with npm by default. However, node-gyp requires you to have python installed. If you are running into node-gyp specific issues have a look at known issues with [node-gyp](https://github.com/nodejs/node-gyp) first.
 
-**Important note:** node-gyp won't handle whitespaces properly, thus make sure, that the path to your project directory does **not contain any whitespaces**. Installing opencv4nodejs under "C:\Program Files\some_dir" or similar will not work and will fail with: "fatal error C1083: Cannot open include file: 'opencv2/core.hpp'"!**
+**Important note:** node-gyp won't handle whitespaces properly, thus make sure, that the path to your project directory does **not contain any whitespaces**. Installing opencv-nodejs under "C:\Program Files\some_dir" or similar will not work and will fail with: "fatal error C1083: Cannot open include file: 'opencv2/core.hpp'"!**
 
-On Windows, you will furthermore need Windows Build Tools to compile OpenCV and opencv4nodejs. If you don't have Visual Studio or Windows Build Tools installed, you can easily install the VS2015 build tools:
+On Windows, you will furthermore need Visual Studio Build Tools to compile opencv-nodejs.
 
-``` bash
-npm install --global windows-build-tools
-```
+### Requirements
 
-Once the @u4/opencv4nodejs is installed, prepare a compilation task in your `package.json`
+- Node.js 24 or 26 (`engines.node` requires `>=24.0.0`)
+- OpenCV 4.x or OpenCV 5.x, installed from your platform's package manager
 
-```json
-{
-  "scripts": {
-    "install_arm64": "build-opencv --version 4.5.4 --flag=\"-DCMAKE_SYSTEM_PROCESSOR=arm64 -DCMAKE_OSX_ARCHITECTURES=arm64\" build",
-    "install_4.5.5_cuda": "build-opencv --version 4.5.5 --flags=\"-DWITH_CUDA=ON -DWITH_CUDNN=ON -DOPENCV_DNN_CUDA=ON -DCUDA_FAST_MATH=ON\" build",
-    "do-install": "build-opencv build",
-  }
-}
-```
-
-then call it to build the mapping
+### macOS
 
 ```bash
-npm run install_4.5.5_cuda
-```
-
-All build params can be appended to the `build-opencv` build command line (see `build-opencv --help`) the opencv4nodejs part of package.json are still read but you should not use it for a new project.
-
-## Installing OpenCV Manually
-
-Setting up OpenCV on your own will require you to set an environment variable to prevent the auto build script from running:
-
-``` bash
-# linux and osx:
-export OPENCV4NODEJS_DISABLE_AUTOBUILD=1
-# on windows:
-set OPENCV4NODEJS_DISABLE_AUTOBUILD=1
-```
-
-### Windows
-
-You can install any of the OpenCV 3 or OpenCV 4 [releases](https://github.com/opencv/opencv/releases/) manually or via the [Chocolatey](https://chocolatey.org/) package manager:
-
-``` bash
-# to install OpenCV 4.6.0
-choco install OpenCV -y -version 4.6.0
-```
-
-Note, this will come without contrib modules. To install OpenCV under windows with contrib modules you have to build the library from source or you can use the auto build script.
-
-Before installing opencv4nodejs with your own installation of OpenCV you need to expose the following environment variables:
-
-- *OPENCV_INCLUDE_DIR* pointing to the directory with the subfolder *opencv2* containing the header files
-- *OPENCV_LIB_DIR* pointing to the lib directory containing the OpenCV .lib files
-
-Also, you will need to add the OpenCV binaries to your system path:
-
-- add an environment variable *OPENCV_BIN_DIR* pointing to the binary directory containing the OpenCV .dll files
-- append `;%OPENCV_BIN_DIR%;` to your system path variable
-
-Note: Restart your current console session after making changes to your environment.
-
-### MacOSX
-
-Under OSX we can simply install OpenCV via brew:
-
-``` bash
 brew update
+# OpenCV 5
+brew install opencv
+# OpenCV 4 (keg-only formula)
 brew install opencv@4
-brew link --force opencv@4
 ```
 
-### Linux
+Both are detected automatically, no `brew link` step required.
 
-Under Linux we have to build OpenCV from source manually or using the auto build script.
-
-## Installing OpenCV via Auto Build Script
-
-The auto build script comes in the form of the [opencv-build](https://github.com/urielch/npm-opencv-build) npm package, which will run by default when installing opencv4nodejs. The script requires you to have git and a recent version of cmake installed.
-
-### Auto Build Flags
-
-You can customize the autobuild flags using *OPENCV4NODEJS_AUTOBUILD_FLAGS=<flags>*.
-Flags must be space-separated.
-
-This is an advanced customization and you should have knowledge regarding the OpenCV compilation flags. Flags added by default are listed [here](https://github.com/urielch/npm-opencv-build/blob/master/src/constants.ts#L44-L82).
-
-### Installing a Specific Version of OpenCV
-
-You can specify the Version of OpenCV you want to install via the script by setting an environment variable:
-`export OPENCV4NODEJS_AUTOBUILD_OPENCV_VERSION=4.6.0`
-
-### Installing only a Subset of OpenCV modules
-
-If you only want to build a subset of the OpenCV modules you can pass the *-DBUILD_LIST* cmake flag via the *OPENCV4NODEJS_AUTOBUILD_FLAGS* environment variable. For example `export OPENCV4NODEJS_AUTOBUILD_FLAGS=-DBUILD_LIST=dnn` will build only modules required for `dnn` and reduces the size and compilation time of the OpenCV package.
-
-## Configuring Environments via package.json (deprecated)
-
-It's possible to specify build environment variables by inserting them into the `package.json` as follows:
-
-```json
-{
-  "name": "my-project",
-  "version": "0.0.0",
-  "dependencies": {
-    "@u4/opencv4nodejs": "^X.X.X"
-  },
-  "opencv4nodejs": {
-    "disableAutoBuild": 1,
-    "opencvIncludeDir": "C:\\tools\\opencv\\build\\include",
-    "opencvLibDir": "C:\\tools\\opencv\\build\\x64\\vc14\\lib",
-    "opencvBinDir": "C:\\tools\\opencv\\build\\x64\\vc14\\bin"
-  }
-}
-```
-
-The following environment variables can be passed:
-
-- autoBuildBuildCuda
-- autoBuildFlags
-- autoBuildOpencvVersion
-- autoBuildWithoutContrib
-- disableAutoBuild
-- opencvIncludeDir
-- opencvLibDir
-- opencvBinDir
-
-
-## Using distrib prebuilt package
+### Debian / Ubuntu
 
 ```bash
 sudo apt install libopencv-dev
-build-opencv --incDir /usr/include/opencv4/ --libDir /lib/x86_64-linux-gnu/ --binDir=/usr/bin/ --nobuild rebuild
 ```
 
-<a name="usage-with-docker"></a>
+Installs OpenCV 4.x.
 
-## Usage with Docker
+### Windows
 
-### a sample DockerBuild script is available [here](https://github.com/UrielCh/opencv4nodejs/blob/master/Dockerfile.debian.examples)
-
-This is an optimized 2 stages images working on ARM64 and AMD64, tested on raspberry Pi4, and Apple silicon, intel Core, and AMD Ryzen CPU.
-
-### [opencv-express](https://github.com/justadudewhohacks/opencv-express) - example for opencv4nodejs with express.js and docker
-
-Or simply pull from [urielch/opencv-nodejs](https://hub.docker.com/r/urielch/opencv-nodejs) for opencv-4.6.0 contrib with opencv4nodejs binary globally installed:
-
-``` docker
-FROM urielch/opencv-nodejs
+```bash
+choco install opencv
 ```
 
-**Note**: The aforementioned Docker image already has ```opencv4nodejs``` installed globally. In order to prevent build errors during an ```npm install```, your ```package.json``` should not include ```opencv4nodejs```, and instead should include/require the global package either by requiring it by absolute path or setting the ```NODE_PATH``` environment variable to ```/usr/lib/node_modules``` in your Dockerfile and requiring the package as you normally would.
+Installs OpenCV 4.x via the [Chocolatey](https://chocolatey.org/) package manager.
 
-Different OpenCV 3.x base images can be found here: <https://hub.docker.com/r/justadudewhohacks/>.
+### OpenCV installed somewhere unusual
+
+If OpenCV isn't found automatically (not installed via Homebrew, pkg-config, or a standard distro/Windows location), point opencv-nodejs at it directly:
+
+```bash
+export OPENCV_INCLUDE_DIR=/path/to/opencv/include
+export OPENCV_LIB_DIR=/path/to/opencv/lib
+npm install --save @pkboom/opencv-nodejs
+```
+
+### The CLI
+
+The module ships a small CLI for driving the build directly, also available via npm scripts (`npm run info`, `npm run rebuild`, `npm run clean`) and as the `build-opencv` bin once installed/linked:
+
+```bash
+node bin/install.js info      # print the detected OpenCV install
+node bin/install.js rebuild   # build the native addon
+node bin/install.js clean     # remove build output
+```
+
+### Debugging module loading
+
+Set `OPENCVNODEJS_DEBUG_REQUIRE=1` before requiring the module for verbose diagnostics about how it locates and loads the native addon.
 
 <a name="usage-with-electron"></a>
 
 ## Usage with Electron
 
-### [opencv-electron](https://github.com/urielch/opencv-electron) - example for opencv4nodejs with electron
+### [opencv-electron](https://github.com/urielch/opencv-electron) - example for opencv-nodejs with electron
 
 Add the following script to your package.json:
 
-```python
-"electron-rebuild": "build-opencv --electron --version 4.5.4 build"
+```json
+"electron-rebuild": "build-opencv --electron rebuild"
 ```
 
 Run the script:
@@ -364,19 +215,19 @@ npm run electron-rebuild
 Require it in the application:
 
 ``` javascript
-const cv = require('@u4/opencv4nodejs');
+const cv = require('@pkboom/opencv-nodejs');
 ```
 
 <a name="usage-with-nwjs"></a>
 
 ## Usage with NW.js
 
-Any native modules, including opencv4nodejs, must be recompiled to be used with [NW.js](https://nwjs.io/). Instructions on how to do this are available in the **[Use Native Modules](http://docs.nwjs.io/en/latest/For%20Users/Advanced/Use%20Native%20Node%20Modules/)** section of the NW.js documentation.
+Any native modules, including opencv-nodejs, must be recompiled to be used with [NW.js](https://nwjs.io/). Instructions on how to do this are available in the **[Use Native Modules](http://docs.nwjs.io/en/latest/For%20Users/Advanced/Use%20Native%20Node%20Modules/)** section of the NW.js documentation.
 
 Once recompiled, the module can be installed and required as usual:
 
 ``` javascript
-const cv = require('@u4/opencv4nodejs');
+const cv = require('@pkboom/opencv-nodejs');
 ```
 
 <a name="quick-start"></a>
@@ -384,7 +235,7 @@ const cv = require('@u4/opencv4nodejs');
 ## Quick Start
 
 ``` javascript
-const cv = require('@u4/opencv4nodejs');
+const cv = require('@pkboom/opencv-nodejs');
 ```
 
 ### Initializing Mat (image matrix), Vec, Point
@@ -662,7 +513,7 @@ try {
 ## With TypeScript
 
 ``` javascript
-import cv from '@u4/opencv4nodejs'
+import cv from '@pkboom/opencv-nodejs'
 ```
 
 Check out the TypeScript [examples](https://github.com/urielch/opencv4nodejs/tree/master/examples).
@@ -673,16 +524,16 @@ Check out the TypeScript [examples](https://github.com/urielch/opencv4nodejs/tre
 
 Since version 4.0.0 was released, external memory tracking has been enabled by default. Simply put, the memory allocated for Matrices (cv.Mat) will be manually reported to the node process. This solves the issue of inconsistent Garbage Collection, which could have resulted in spiking memory usage of the node process eventually leading to overflowing the RAM of your system, prior to version 4.0.0.
 
-Note, that in doubt this feature can be **disabled** by setting an environment variable `OPENCV4NODEJS_DISABLE_EXTERNAL_MEM_TRACKING` before requiring the module:
+Note, that in doubt this feature can be **disabled** by setting an environment variable `OPENCVNODEJS_DISABLE_EXTERNAL_MEM_TRACKING` before requiring the module:
 
 ``` bash
-export OPENCV4NODEJS_DISABLE_EXTERNAL_MEM_TRACKING=1 // linux
-set OPENCV4NODEJS_DISABLE_EXTERNAL_MEM_TRACKING=1 // windows
+export OPENCVNODEJS_DISABLE_EXTERNAL_MEM_TRACKING=1 // linux
+set OPENCVNODEJS_DISABLE_EXTERNAL_MEM_TRACKING=1 // windows
 ```
 
 Or directly in your code:
 
 ``` javascript
-process.env.OPENCV4NODEJS_DISABLE_EXTERNAL_MEM_TRACKING = 1
-const cv = require('@u4/opencv4nodejs')
+process.env.OPENCVNODEJS_DISABLE_EXTERNAL_MEM_TRACKING = 1
+const cv = require('@pkboom/opencv-nodejs')
 ```

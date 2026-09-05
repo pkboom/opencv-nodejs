@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { type OpenCVBuildEnvParams } from '@u4/opencv-build';
 import promisify from './promisify.js';
 import extendWithJsSources from './ext/index.js';
 import { getOpenCV } from './cvloader.js';
@@ -12,9 +11,9 @@ export { getDirName, getRequire } from "./meta.js"
 
 declare type OpenCVType = typeof openCV;
 
-function loadOpenCV(opt?: OpenCVBuildEnvParams): OpenCVType {
+function loadOpenCV(): OpenCVType {
   // load native binding
-  const cvBase = getOpenCV(opt);
+  const cvBase = getOpenCV();
   // check the presence of any expected symbol, to ensure the library is loaded
   if (!cvBase.accumulate) {
     throw Error('failed to load opencv basic accumulate not found.')
@@ -40,7 +39,7 @@ function loadOpenCV(opt?: OpenCVBuildEnvParams): OpenCVType {
   return cvObj;
 }
 
-export const cv = loadOpenCV({ prebuild: 'latestBuild' });
+export const cv = loadOpenCV();
 
 function dumpExports() {
   let allExports = Object.keys(cv);

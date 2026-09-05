@@ -6,8 +6,6 @@
 #include "Mat.h"
 #include "Rect.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 #ifndef __FF_MULTITRACKER_H__
 #define __FF_MULTITRACKER_H__
 
@@ -38,4 +36,3 @@ public:
 
 #endif
 
-#endif

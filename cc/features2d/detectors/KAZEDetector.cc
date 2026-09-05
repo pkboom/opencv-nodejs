@@ -1,6 +1,6 @@
 #include "opencv_modules.h"
 
-#ifdef HAVE_OPENCV_FEATURES2D
+#ifdef HAVE_LEGACY_FEATURE_DETECTORS
 
 #include "KAZEDetector.h"
 
@@ -23,9 +23,7 @@ NAN_MODULE_INIT(KAZEDetector::Init) {
   Nan::SetAccessor(instanceTemplate, Nan::New("diffusivity").ToLocalChecked(), diffusivity_getter);
 
   Nan::Set(target, Nan::New("KAZEDetector").ToLocalChecked(), FF::getFunction(ctor));
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   DiffusivityType::init(target);
-#endif
 };
 
 NAN_METHOD(KAZEDetector::New) {

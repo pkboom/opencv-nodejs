@@ -13,12 +13,9 @@
 #include "coreUtils.h"
 #include "matUtils.h"
 
-// only valid for 3.1.0+
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-#define OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING 1
-#endif
+#define OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING 1
 
-#ifdef OPENCV4NODEJS_ENABLE_EXTERNALMEMTRACKING
+#ifdef OPENCVNODEJS_ENABLE_EXTERNALMEMTRACKING
 
 class CustomMatAllocator : public cv::MatAllocator {
 public:
@@ -54,20 +51,12 @@ public:
 
   cv::UMatData* allocate(
       int dims, const int* sizes, int type, void* data0, size_t* step,
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
       cv::AccessFlag,
-#else
-      int /*flags*/,
-#endif
       cv::UMatUsageFlags /*usageFlags*/
   ) const;
 
   bool allocate(cv::UMatData* u,
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
                 cv::AccessFlag,
-#else
-                int /*flags*/,
-#endif
                 cv::UMatUsageFlags /*usageFlags*/
   ) const;
 

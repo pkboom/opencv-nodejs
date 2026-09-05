@@ -1,5 +1,5 @@
 import path from 'node:path';
-import type { Mat, Rect } from '@u4/opencv4nodejs';
+import type { Mat, Rect } from '@pkboom/opencv-nodejs';
 import { cv, drawBlueRect, getCachedFile, getResourcePath, wait4key } from './utils.js';
 
 /**
@@ -101,7 +101,7 @@ async function detection(modelPath: string, imgAbsPath: string): Promise<void> {
 
 async function main() {
   if (!cv.xmodules || !cv.xmodules.dnn) {
-    console.error('exiting: opencv4nodejs compiled without dnn module');
+    console.error('exiting: opencv-nodejs compiled without dnn module');
     return;
   }
   

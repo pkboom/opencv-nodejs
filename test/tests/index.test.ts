@@ -1,6 +1,6 @@
  
 import { expect } from 'chai';
-import cv from '@u4/opencv4nodejs';
+import cv from '@pkboom/opencv-nodejs';
 import { getTestContext } from './model';
 import { builtModules, opencvVersionString } from './toTest';
 

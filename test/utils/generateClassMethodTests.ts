@@ -1,4 +1,4 @@
-import type openCV from '@u4/opencv4nodejs';
+import type openCV from '@pkboom/opencv-nodejs';
 import { generateAPITests, getDefaultAPITestOpts, PartialAPITestOpts } from './generateAPITests';
 import { APITestOpts } from '../tests/model';
 

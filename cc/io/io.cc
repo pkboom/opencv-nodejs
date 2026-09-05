@@ -16,9 +16,7 @@ NAN_MODULE_INIT(Io::Init) {
   Nan::SetMethod(target, "imshowWait", ImshowWait);
   Nan::SetMethod(target, "imwrite", Imwrite);
   Nan::SetMethod(target, "waitKey", WaitKey);
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
   Nan::SetMethod(target, "waitKeyEx", WaitKeyEx);
-#endif
   Nan::SetMethod(target, "imencode", Imencode);
   Nan::SetMethod(target, "imdecode", Imdecode);
   Nan::SetMethod(target, "destroyWindow", DestroyWindow);
@@ -63,15 +61,12 @@ NAN_MODULE_INIT(Io::Init) {
   FF_SET_JS_PROP(target, IMWRITE_PXM_BINARY, Nan::New<v8::Integer>(cv::IMWRITE_PXM_BINARY));
   FF_SET_JS_PROP(target, IMWRITE_WEBP_QUALITY, Nan::New<v8::Integer>(cv::IMWRITE_WEBP_QUALITY));
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
   FF_SET_JS_PROP(target, IMREAD_REDUCED_GRAYSCALE_2, Nan::New<v8::Integer>(cv::IMREAD_REDUCED_GRAYSCALE_2));
   FF_SET_JS_PROP(target, IMREAD_REDUCED_COLOR_2, Nan::New<v8::Integer>(cv::IMREAD_REDUCED_COLOR_2));
   FF_SET_JS_PROP(target, IMREAD_REDUCED_GRAYSCALE_4, Nan::New<v8::Integer>(cv::IMREAD_REDUCED_GRAYSCALE_4));
   FF_SET_JS_PROP(target, IMREAD_REDUCED_COLOR_4, Nan::New<v8::Integer>(cv::IMREAD_REDUCED_COLOR_4));
   FF_SET_JS_PROP(target, IMREAD_REDUCED_GRAYSCALE_8, Nan::New<v8::Integer>(cv::IMREAD_REDUCED_GRAYSCALE_8));
   FF_SET_JS_PROP(target, IMREAD_REDUCED_COLOR_8, Nan::New<v8::Integer>(cv::IMREAD_REDUCED_COLOR_8));
-#endif
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
   FF_SET_JS_PROP(target, IMREAD_IGNORE_ORIENTATION, Nan::New<v8::Integer>(cv::IMREAD_IGNORE_ORIENTATION));
   FF_SET_JS_PROP(target, IMWRITE_PAM_TUPLETYPE, Nan::New<v8::Integer>(cv::IMWRITE_PAM_TUPLETYPE));
 
@@ -81,7 +76,6 @@ NAN_MODULE_INIT(Io::Init) {
   FF_SET_JS_PROP(target, IMWRITE_PAM_FORMAT_GRAYSCALE_ALPHA, Nan::New<v8::Integer>(cv::IMWRITE_PAM_FORMAT_GRAYSCALE_ALPHA));
   FF_SET_JS_PROP(target, IMWRITE_PAM_FORMAT_RGB, Nan::New<v8::Integer>(cv::IMWRITE_PAM_FORMAT_RGB));
   FF_SET_JS_PROP(target, IMWRITE_PAM_FORMAT_RGB_ALPHA, Nan::New<v8::Integer>(cv::IMWRITE_PAM_FORMAT_RGB_ALPHA));
-#endif
   FF_SET_JS_PROP(target, IMWRITE_PNG_STRATEGY_DEFAULT, Nan::New<v8::Integer>(cv::IMWRITE_PNG_STRATEGY_DEFAULT));
   FF_SET_JS_PROP(target, IMWRITE_PNG_STRATEGY_FILTERED, Nan::New<v8::Integer>(cv::IMWRITE_PNG_STRATEGY_FILTERED));
   FF_SET_JS_PROP(target, IMWRITE_PNG_STRATEGY_HUFFMAN_ONLY, Nan::New<v8::Integer>(cv::IMWRITE_PNG_STRATEGY_HUFFMAN_ONLY));
@@ -122,7 +116,6 @@ NAN_METHOD(Io::WaitKey) {
   info.GetReturnValue().Set(Nan::New(key));
 }
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
 NAN_METHOD(Io::WaitKeyEx) {
   int key;
   if (info[0]->IsNumber()) {
@@ -132,7 +125,6 @@ NAN_METHOD(Io::WaitKeyEx) {
   }
   info.GetReturnValue().Set(Nan::New(key));
 }
-#endif
 
 NAN_METHOD(Io::DestroyWindow) {
   FF::TryCatch tryCatch("Io::DestroyWindow");

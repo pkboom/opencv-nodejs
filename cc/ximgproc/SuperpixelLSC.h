@@ -2,8 +2,6 @@
 #include "macros.h"
 #include <opencv2/ximgproc.hpp>
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 #ifndef __FF_SUPERPIXELLSC_H__
 #define __FF_SUPERPIXELLSC_H__
 
@@ -64,7 +62,5 @@ public:
     }
   };
 };
-
-#endif
 
 #endif

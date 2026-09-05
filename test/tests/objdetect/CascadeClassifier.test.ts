@@ -5,7 +5,7 @@ import { getTestContext } from '../model';
 import toTest from '../toTest';
 
 if (toTest.objdetect) {
-  const { cv, cvVersionEqual, getTestImg } = getTestContext();
+  const { cv, getTestImg } = getTestContext();
 
   describe('CascadeClassifier', () => {
     const xmlHaarFile = cv.HAAR_FRONTALFACE_DEFAULT;
@@ -72,7 +72,7 @@ if (toTest.objdetect) {
         });
       });
 
-      (cvVersionEqual(3, 1, 0) ? describe.skip : describe)('detectMultiScaleWithRejectLevels', () => {
+      describe('detectMultiScaleWithRejectLevels', () => {
         const expectOutput = (ret: DetectMultiScaleWithRejectLevels) => {
           expect(ret).to.have.property('objects').to.be.an('array');
           expect(ret).to.have.property('rejectLevels').to.be.an('array');

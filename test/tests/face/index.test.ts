@@ -6,7 +6,7 @@ import toTest from '../toTest';
 
 if (toTest.face) {
   const ctxt = getTestContext();
-  const { cv, cvVersionGreaterEqual } = ctxt;
+  const { cv } = ctxt;
 
   const recognizerTests = recognizerTestsFactory(ctxt);
   const facemarkTests = facemarkTestsFactory(ctxt);
@@ -31,17 +31,15 @@ if (toTest.face) {
     });
   });
 
-  if (cvVersionGreaterEqual(3, 4, 0)) {
-    describe('FaceMark', () => {
-      facemarkStructsTests(ctxt);
+  describe('FaceMark', () => {
+    facemarkStructsTests(ctxt);
 
-      describe('FacemarkLBF', () => {
-        facemarkTests(cv.FacemarkLBF, cv.FacemarkLBFParams);
-      });
-
-      describe('FacemarkAAM', () => {
-        facemarkTests(cv.FacemarkAAM, cv.FacemarkAAMParams);
-      });
+    describe('FacemarkLBF', () => {
+      facemarkTests(cv.FacemarkLBF, cv.FacemarkLBFParams);
     });
-  }
+
+    describe('FacemarkAAM', () => {
+      facemarkTests(cv.FacemarkAAM, cv.FacemarkAAMParams);
+    });
+  });
 }

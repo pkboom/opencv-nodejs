@@ -96,10 +96,8 @@ public:
   static NAN_METHOD(CopyMakeBorder);
   static NAN_METHOD(CopyMakeBorderAsync);
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
   static NAN_METHOD(Rotate);
   static NAN_METHOD(RotateAsync);
-#endif
 
   static NAN_METHOD(AddWeighted);
   static NAN_METHOD(AddWeightedAsync);

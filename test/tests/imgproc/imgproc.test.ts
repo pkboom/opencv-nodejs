@@ -11,8 +11,6 @@ if (toTest.imgproc) {
     cv,
     getTestImg,
     generateClassMethodTests,
-    cvVersionLowerThan,
-    cvVersionGreaterEqual,
   } = getTestContext();
 
   const rgbMatData = [
@@ -239,8 +237,7 @@ if (toTest.imgproc) {
       assertPropsWithValue(hist2D, { rows: 8, cols: 32, dims: 2 });
     });
 
-    // TODO causes sigsegv on 3.0.0 and 3.1.0
-    (cvVersionLowerThan(3, 2, 0) ? it.skip : it)('should return 3 dimensional hist', () => {
+    it('should return 3 dimensional hist', () => {
       const histAxes = [
         {
           channel: 0,
@@ -318,7 +315,7 @@ if (toTest.imgproc) {
     });
   });
 
-  (cvVersionLowerThan(3, 2, 0) ? describe.skip : describe)('canny', () => {
+  describe('canny', () => {
     const th1 = 2.8;
     const th2 = 0.8;
     const L2gradient = true;
@@ -379,38 +376,6 @@ if (toTest.imgproc) {
       });
     });
 
-    if (!cvVersionGreaterEqual(4, 0, 0)) {
-      describe('undistortPoints', () => {
-        const cameraMatrix = new cv.Mat([[1, 0, 10], [0, 1, 10], [0, 0, 1]], cv.CV_32F);
-        // const newCameraMatrix = new cv.Mat([[0.5, 0, 10],[0, 0.5, 10],[0, 0, 1]], cv.CV_32F);
-        const distCoeffs = new cv.Mat([[0.1, 0.1, 1, 1]], cv.CV_32F);
-        const srcPoints2 = [
-          [5, 5], [5, 10], [5, 15],
-        ].map((p) => new cv.Point2(p[0], p[1]));
-        const expectedDestPoints = [
-          [9.522233963012695, 9.522233963012695],
-          [9.128815650939941, 9.661333084106445],
-          [9.76507568359375, 9.841306686401367],
-        ].map((p) => new cv.Point2(p[0], p[1]));
-
-        generateAPITests({
-          getDut: () => cv,
-          methodName: 'undistortPoints',
-          getRequiredArgs: () => ([
-            srcPoints2,
-            cameraMatrix,
-            distCoeffs,
-          ]),
-          expectOutput: (destPoints) => {
-            expect(destPoints.length).to.equal(expectedDestPoints.length);
-            for (let i = 0; i < destPoints.length; i++) {
-              expect(destPoints[i].x).to.be.closeTo(expectedDestPoints[i].x, 0.001);
-              expect(destPoints[i].y).to.be.closeTo(expectedDestPoints[i].y, 0.001);
-            }
-          },
-        });
-      });
-    }
   });
 
   describe('applyColorMap', () => {
@@ -448,19 +413,17 @@ if (toTest.imgproc) {
       });
     });
 
-    if (cvVersionGreaterEqual(3, 3, 0)) {
-      describe('should process an image with a customized colormap', () => {
-        generateAPITests({
-          getDut: () => cv,
-          methodName: 'applyColorMap',
-          getRequiredArgs: () => ([
-            new cv.Mat([[0, 1, 100]], cv.CV_8UC1),
-            new cv.Mat(256, 1, cv.CV_8UC3),
-          ]),
-          expectOutput: (res) => expect(res).to.be.instanceOf(cv.Mat),
-        });
+    describe('should process an image with a customized colormap', () => {
+      generateAPITests({
+        getDut: () => cv,
+        methodName: 'applyColorMap',
+        getRequiredArgs: () => ([
+          new cv.Mat([[0, 1, 100]], cv.CV_8UC1),
+          new cv.Mat(256, 1, cv.CV_8UC3),
+        ]),
+        expectOutput: (res) => expect(res).to.be.instanceOf(cv.Mat),
       });
-    }
+    });
   });
 
   describe('accumulate', () => {

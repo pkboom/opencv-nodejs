@@ -35,10 +35,8 @@ NAN_METHOD(TrackerMedianFlow::New) {
 
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   self->tracker = cv::legacy::TrackerMedianFlow::create(params);
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  self->tracker = cv::TrackerMedianFlow::create(params);
 #else
-  self->tracker = cv::TrackerMedianFlow::createTracker(params);
+  self->tracker = cv::TrackerMedianFlow::create(params);
 #endif
 
   self->Wrap(info.Holder());

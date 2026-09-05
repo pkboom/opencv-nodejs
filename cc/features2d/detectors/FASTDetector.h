@@ -17,7 +17,6 @@ public:
     return self;
   }
 
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   class DetectorType : public FF::EnumWrap<DetectorType> {
   public:
     typedef cv::FastFeatureDetector::DetectorType Type;
@@ -34,15 +33,10 @@ public:
       return {"TYPE_5_8", "TYPE_7_12", "TYPE_9_16"};
     }
   };
-#endif
 
   FF_GETTER_CUSTOM(threshold, FF::IntConverter, self->getThreshold());
   FF_GETTER_CUSTOM(nonmaxSuppression, FF::BoolConverter, self->getNonmaxSuppression());
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   FF_GETTER_CUSTOM(type, FASTDetector::DetectorType::Converter, self->getType());
-#else
-  FF_GETTER_CUSTOM(type, FF::IntConverter, self->getType());
-#endif
 
   static NAN_MODULE_INIT(Init);
   static NAN_METHOD(New);
@@ -55,11 +49,7 @@ public:
 
       auto threshold = opt<FF::IntConverter>("threshold", 10);
       auto nonmaxSuppression = opt<FF::BoolConverter>("nonmaxSuppression", true);
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
       auto type = opt<FASTDetector::DetectorType::Converter>("type", cv::FastFeatureDetector::TYPE_9_16);
-#else
-      auto type = opt<FF::IntConverter>("type", cv::FastFeatureDetector::TYPE_9_16);
-#endif
       if (applyUnwrappers(info)) {
         return tryCatch.reThrow();
       }

@@ -25,14 +25,8 @@ public:
   static NAN_METHOD(GetTextSizeAsync);
   static NAN_METHOD(ApplyColorMap);
   static NAN_METHOD(ApplyColorMapAsync);
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
   static NAN_METHOD(Canny);
   static NAN_METHOD(CannyAsync);
-#endif
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-  static NAN_METHOD(UndistortPoints);
-  static NAN_METHOD(UndistortPointsAsync);
-#endif
   static NAN_METHOD(GoodFeaturesToTrack);
   static NAN_METHOD(GoodFeaturesToTrackAsync);
   static NAN_METHOD(Blur);

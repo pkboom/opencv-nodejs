@@ -70,11 +70,9 @@ NAN_MODULE_INIT(Core::Init) {
 
   Nan::SetMethod(target, "getTickFrequency", GetTickFrequency);
   Nan::SetMethod(target, "getTickCount", GetTickCount);
-#if CV_VERSION_GREATER_EQUAL(3, 4, 2)
   Nan::SetMethod(target, "getVersionMajor", GetVersionMajor);
   Nan::SetMethod(target, "getVersionMinor", GetVersionMinor);
   Nan::SetMethod(target, "getVersionRevision", GetVersionRevision);
-#endif
 };
 
 NAN_METHOD(Core::GetBuildInformation) {
@@ -87,7 +85,7 @@ static std::function<bool(TNativeObject, TNativeObject)> predicateFactory(v8::Lo
     v8::Local<v8::Value> cbArgs[2];
     cbArgs[0] = TClass::Converter::wrap(pt1);
     cbArgs[1] = TClass::Converter::wrap(pt2);
-    Nan::AsyncResource resource("opencv4nodejs:Predicate::Constructor");
+    Nan::AsyncResource resource("opencv-nodejs:Predicate::Constructor");
     return FF::BoolConverter::unwrapUnchecked(resource.runInAsyncScope(Nan::GetCurrentContext()->Global(), cb, 2, cbArgs).ToLocalChecked());
   };
 }
@@ -409,7 +407,6 @@ NAN_METHOD(Core::GetTickCount) {
   info.GetReturnValue().Set(FF::IntConverter::wrap(cv::getTickCount()));
 }
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 2)
 NAN_METHOD(Core::GetVersionMajor) {
   info.GetReturnValue().Set(FF::IntConverter::wrap(cv::getVersionMajor()));
 }
@@ -421,4 +418,3 @@ NAN_METHOD(Core::GetVersionMinor) {
 NAN_METHOD(Core::GetVersionRevision) {
   info.GetReturnValue().Set(FF::IntConverter::wrap(cv::getVersionRevision()));
 }
-#endif

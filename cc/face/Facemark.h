@@ -6,8 +6,6 @@
 #include <iostream>
 #include <opencv2/face.hpp>
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
-
 #ifndef __FF_FACEMARK_H__
 #define __FF_FACEMARK_H__
 
@@ -41,4 +39,3 @@ public:
 
 #endif
 
-#endif

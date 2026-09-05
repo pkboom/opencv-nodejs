@@ -6,7 +6,7 @@ import { generateAPITests } from '../../utils/generateAPITests';
 import toTest from '../toTest';
 
 if (toTest.text) {
-  const { cv, cvVersionGreaterEqual } = getTestContext();
+  const { cv } = getTestContext();
 
   describe('loadOCRHMMClassifierNM', () => {
     generateAPITests({
@@ -21,36 +21,34 @@ if (toTest.text) {
     });
   });
 
-  if (cvVersionGreaterEqual(3, 1, 0)) {
-    describe('loadOCRHMMClassifierCNN', () => {
-      generateAPITests({
-        getDut: () => cv,
-        methodName: 'loadOCRHMMClassifierCNN',
-        getRequiredArgs: () => ([
-          path.resolve('../data/text-models/OCRBeamSearch_CNN_model_data.xml.gz'),
-        ]),
-        expectOutput: (classifier) => {
-          expect(classifier).to.be.instanceOf(cv.OCRHMMClassifier);
-        },
-      });
+  describe('loadOCRHMMClassifierCNN', () => {
+    generateAPITests({
+      getDut: () => cv,
+      methodName: 'loadOCRHMMClassifierCNN',
+      getRequiredArgs: () => ([
+        path.resolve('../data/text-models/OCRBeamSearch_CNN_model_data.xml.gz'),
+      ]),
+      expectOutput: (classifier) => {
+        expect(classifier).to.be.instanceOf(cv.OCRHMMClassifier);
+      },
     });
+  });
 
-    describe('createOCRHMMTransitionsTable', () => {
-      const vocabulary = 'abcdefghijklmnopqrstuvwxyz';
-      const lexicon = ['foo', 'bar', 'what', 'the', 'heck'];
+  describe('createOCRHMMTransitionsTable', () => {
+    const vocabulary = 'abcdefghijklmnopqrstuvwxyz';
+    const lexicon = ['foo', 'bar', 'what', 'the', 'heck'];
 
-      generateAPITests({
-        getDut: () => cv,
-        methodName: 'createOCRHMMTransitionsTable',
-        getRequiredArgs: () => ([
-          vocabulary,
-          lexicon,
-        ]),
-        expectOutput: (transitionPTable) => {
-          expect(transitionPTable).to.be.instanceOf(cv.Mat);
-          assertMetaData(transitionPTable)(26, 26, cv.CV_64F);
-        },
-      });
+    generateAPITests({
+      getDut: () => cv,
+      methodName: 'createOCRHMMTransitionsTable',
+      getRequiredArgs: () => ([
+        vocabulary,
+        lexicon,
+      ]),
+      expectOutput: (transitionPTable) => {
+        expect(transitionPTable).to.be.instanceOf(cv.Mat);
+        assertMetaData(transitionPTable)(26, 26, cv.CV_64F);
+      },
     });
-  }
+  });
 }

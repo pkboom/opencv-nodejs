@@ -26,10 +26,8 @@ NAN_METHOD(TrackerTLD::New) {
   TrackerTLD* self = new TrackerTLD();
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   self->tracker = cv::legacy::TrackerTLD::create();
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  self->tracker = cv::TrackerTLD::create();
 #else
-  self->tracker = cv::TrackerTLD::createTracker();
+  self->tracker = cv::TrackerTLD::create();
 #endif
   self->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());

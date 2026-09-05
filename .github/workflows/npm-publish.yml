@@ -8,12 +8,6 @@ on:
     types: [ created ]
   workflow_dispatch:
 
-env:
-  # OPENCV_INCLUDE_DIR: /usr/include/opencv4/
-  # OPENCV_LIB_DIR: /usr/lib/x86_64-linux-gnu/
-  # OPENCV_BIN_DIR: /usr/bin/
-  OPENCV4NODEJS_DISABLE_AUTOBUILD: 1
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,20 +17,24 @@ jobs:
       - name: Install libopencv
         run: sudo apt-get install -y libopencv-dev libopencv-features2d-dev
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         with:
-          version: 9.3.0
+          version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: https://registry.npmjs.org/
           cache: 'pnpm'
+      # Skip lifecycle scripts: the addon is built explicitly below, after the
+      # TypeScript in this checkout has been compiled.
       - name: Install dependencies using pnpm
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: build CJS + ESM files
-        run: pnpm run prepack
-      - name: build native modules using node-gyp
-        run: pnpm run rebuild
+        run: pnpm run build
+      - name: Show detected OpenCV
+        run: node bin/install.js info
+      - name: build native modules
+        run: node bin/install.js rebuild
       - name: Prepare tests
         run: cd test && pnpm install --frozen-lockfile
       - name: run tests

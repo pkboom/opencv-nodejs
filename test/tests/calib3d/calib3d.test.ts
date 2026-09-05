@@ -11,7 +11,7 @@ import toTest from '../toTest';
 if (toTest.calib3d) {
   const CV_CALIB_USE_INTRINSIC_GUESS = 1;
 
-  const { cv, cvVersionGreaterEqual } = getTestContext();
+  const { cv } = getTestContext();
 
   const objectPoints = [
     new cv.Point3(0, 0, 0),
@@ -153,7 +153,7 @@ if (toTest.calib3d) {
       });
     });
 
-    (cvVersionGreaterEqual(3, 3, 0) ? describe : describe.skip)('solveP3P', () => {
+    describe('solveP3P', () => {
       generateAPITests({
         getDut: () => cv,
         methodName: 'solveP3P',
@@ -262,7 +262,7 @@ if (toTest.calib3d) {
       ['termCriteria', new cv.TermCriteria()],
     ]);
 
-    (cvVersionGreaterEqual(3, 1, 0) ? describe : describe.skip)('calibrateCamera', () => {
+    describe('calibrateCamera', () => {
       generateAPITests({
         getDut: () => cv,
         methodName: 'calibrateCamera',
@@ -272,7 +272,7 @@ if (toTest.calib3d) {
       });
     });
 
-    (cvVersionGreaterEqual(3, 2, 0) ? describe : describe.skip)('calibrateCameraExtended', () => {
+    describe('calibrateCameraExtended', () => {
       generateAPITests({
         getDut: () => cv,
         methodName: 'calibrateCameraExtended',
@@ -358,6 +358,27 @@ if (toTest.calib3d) {
   });
 
   describe('findFundamentalMat', () => {
+    const fundamentalPoints1 = [
+      new cv.Point2(10, 10),
+      new cv.Point2(200, 20),
+      new cv.Point2(30, 180),
+      new cv.Point2(220, 200),
+      new cv.Point2(60, 120),
+      new cv.Point2(150, 70),
+      new cv.Point2(90, 210),
+      new cv.Point2(210, 90),
+    ];
+    const fundamentalPoints2 = [
+      new cv.Point2(12, 11),
+      new cv.Point2(203, 22),
+      new cv.Point2(31, 183),
+      new cv.Point2(224, 203),
+      new cv.Point2(63, 121),
+      new cv.Point2(152, 73),
+      new cv.Point2(92, 213),
+      new cv.Point2(213, 92),
+    ];
+
     const expectOutput = (res: { F: Mat, mask: Mat }) => {
       expect(res).to.have.property('F').to.be.instanceOf(cv.Mat);
       assertMetaData(res.F)(3, 3, cv.CV_64F);
@@ -369,8 +390,8 @@ if (toTest.calib3d) {
       getDut: () => cv,
       methodName: 'findFundamentalMat',
       getRequiredArgs: () => [
-        imagePoints,
-        imagePoints,
+        fundamentalPoints1,
+        fundamentalPoints2,
       ],
       getOptionalParamsMap: () => ([
         ['method', cv.FM_LMEDS],
@@ -510,7 +531,7 @@ if (toTest.calib3d) {
     });
   });
 
-  (cvVersionGreaterEqual(3, 1, 0) ? describe : describe.skip)('sampsonDistance', () => {
+  describe('sampsonDistance', () => {
     const pt1 = new cv.Vec2(0.5, 0.5);
     const pt2 = new cv.Vec2(100.5, 100.5);
     const F = cv.Mat.eye(3, 3, cv.CV_64F);
@@ -527,7 +548,7 @@ if (toTest.calib3d) {
     });
   });
 
-  (cvVersionGreaterEqual(3, 2, 0) ? describe : describe.skip)('estimateAffine2D', () => {
+  describe('estimateAffine2D', () => {
     const expectOutput = (res: EstimateAffine2DRet) => {
       expect(res).to.have.property('out').to.be.instanceOf(cv.Mat);
       assertMetaData(res.out)(2, 3, cv.CV_64F);
@@ -568,36 +589,34 @@ if (toTest.calib3d) {
     });
   });
 
-  if (cvVersionGreaterEqual(4, 0, 0)) {
-    describe('undistortPoints', () => {
-      const cameraMatrix = new cv.Mat([[1, 0, 10], [0, 1, 10], [0, 0, 1]], cv.CV_32F);
-      // const newCameraMatrix = new cv.Mat([[0.5, 0, 10],[0, 0.5, 10],[0, 0, 1]], cv.CV_32F);
-      const distCoeffs = new cv.Mat([[0.1, 0.1, 1, 1]], cv.CV_32F);
-      const srcPoints = [
-        [5, 5], [5, 10], [5, 15],
-      ].map((p) => new cv.Point2(p[0], p[1]));
-      const expectedDestPoints = [
-        [9.522233963012695, 9.522233963012695],
-        [9.128815650939941, 9.661333084106445],
-        [9.76507568359375, 9.841306686401367],
-      ].map((p) => new cv.Point2(p[0], p[1]));
+  describe('undistortPoints', () => {
+    const cameraMatrix = new cv.Mat([[1, 0, 10], [0, 1, 10], [0, 0, 1]], cv.CV_32F);
+    // const newCameraMatrix = new cv.Mat([[0.5, 0, 10],[0, 0.5, 10],[0, 0, 1]], cv.CV_32F);
+    const distCoeffs = new cv.Mat([[0.1, 0.1, 1, 1]], cv.CV_32F);
+    const srcPoints = [
+      [5, 5], [5, 10], [5, 15],
+    ].map((p) => new cv.Point2(p[0], p[1]));
+    const expectedDestPoints = [
+      [9.522233963012695, 9.522233963012695],
+      [9.128815650939941, 9.661333084106445],
+      [9.76507568359375, 9.841306686401367],
+    ].map((p) => new cv.Point2(p[0], p[1]));
 
-      generateAPITests({
-        getDut: () => cv,
-        methodName: 'undistortPoints',
-        getRequiredArgs: () => ([
-          srcPoints,
-          cameraMatrix,
-          distCoeffs,
-        ]),
-        expectOutput: (destPoints) => {
-          expect(destPoints.length).to.equal(expectedDestPoints.length);
-          for (let i = 0; i < destPoints.length; i++) {
-            expect(destPoints[i].x).to.be.closeTo(expectedDestPoints[i].x, 0.001);
-            expect(destPoints[i].y).to.be.closeTo(expectedDestPoints[i].y, 0.001);
-          }
-        },
-      });
+    generateAPITests({
+      getDut: () => cv,
+      methodName: 'undistortPoints',
+      getRequiredArgs: () => ([
+        srcPoints,
+        cameraMatrix,
+        distCoeffs,
+      ]),
+      expectOutput: (destPoints) => {
+        expect(destPoints.length).to.equal(expectedDestPoints.length);
+        for (let i = 0; i < destPoints.length; i++) {
+          expect(destPoints[i].x).to.be.closeTo(expectedDestPoints[i].x, 0.001);
+          expect(destPoints[i].y).to.be.closeTo(expectedDestPoints[i].y, 0.001);
+        }
+      },
     });
-  }
+  });
 }

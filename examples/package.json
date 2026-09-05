@@ -1,7 +1,7 @@
 {
-  "name": "opencv4nodejs-examples",
+  "name": "opencv-nodejs-examples",
   "version": "0.0.0",
-  "description": "example for opencv4nodejs",
+  "description": "example for opencv-nodejs",
   "main": "src/EASTTextDetection.js",
   "type": "module",
   "scripts": {
@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/lodash.samplesize": "^4.2.9",
-    "@u4/opencv4nodejs": "link:..",
+    "@pkboom/opencv-nodejs": "link:..",
     "axios": "^1.6.8",
     "lodash.samplesize": "^4.2.0",
     "mri": "^1.2.0",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@types/mri": "^1.2.0",
-    "@types/node": "^20.12.7",
+    "@types/node": "^26.4.1",
     "@types/progress": "^2.0.7",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",

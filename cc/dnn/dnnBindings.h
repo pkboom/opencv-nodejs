@@ -5,7 +5,8 @@
 
 namespace DnnBindings {
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
+// OpenCV 5 dropped the Caffe and Darknet model importers.
 struct ReadNetFromDarknetWorker : public CatchCvExceptionWorker {
 public:
   std::string cfgFile;
@@ -36,8 +37,6 @@ public:
   }
 };
 #endif
-
-#if CV_VERSION_GREATER_EQUAL(3, 4, 2)
 
 struct ReadNetWorker : public CatchCvExceptionWorker {
 public:
@@ -80,9 +79,7 @@ public:
         FF::StringConverter::optProp(&config, "config", opts) || FF::StringConverter::optProp(&framework, "framework", opts));
   }
 };
-#endif
 
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
 struct ReadNetFromONNXWorker : public CatchCvExceptionWorker {
 public:
   std::string onnxFile;
@@ -108,7 +105,6 @@ public:
     return FF::StringConverter::arg(0, &onnxFile, info);
   }
 };
-#endif
 
 struct ReadNetFromTensorflowWorker : public CatchCvExceptionWorker {
 public:
@@ -121,11 +117,7 @@ public:
   }
 
   std::string executeCatchCvExceptionWorker() {
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
     net = cv::dnn::readNetFromTensorflow(modelFile, configFile);
-#else
-    net = cv::dnn::readNetFromTensorflow(modelFile);
-#endif
     if (net.empty()) {
       return std::string("failed to load net: " + modelFile + "failed to load config: " + configFile).data();
     }
@@ -145,6 +137,8 @@ public:
   }
 };
 
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
+// OpenCV 5 dropped the Caffe and Darknet model importers.
 struct ReadNetFromCaffeWorker : public CatchCvExceptionWorker {
 public:
   std::string prototxt;
@@ -176,6 +170,7 @@ public:
     return (FF::StringConverter::optArg(1, &modelFile, info));
   }
 };
+#endif
 
 struct BlobFromImageWorker : public CatchCvExceptionWorker {
 public:
@@ -198,19 +193,11 @@ public:
   cv::Mat returnValue;
 
   std::string executeCatchCvExceptionWorker() {
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0) && CV_VERSION_REVISION > 2
     if (isSingleImage) {
       returnValue = cv::dnn::blobFromImage(image, scalefactor, size, mean, swapRB, crop, ddepth);
     } else {
       returnValue = cv::dnn::blobFromImages(images, scalefactor, size, mean, swapRB, crop, ddepth);
     }
-#else
-    if (isSingleImage) {
-      returnValue = cv::dnn::blobFromImage(image, scalefactor, size, mean, swapRB);
-    } else {
-      returnValue = cv::dnn::blobFromImages(images, scalefactor, size, mean, swapRB);
-    }
-#endif
     return "";
   }
 
@@ -239,7 +226,6 @@ public:
   }
 };
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
 struct NMSBoxes : public CatchCvExceptionWorker {
 public:
   std::vector<cv::Rect> bboxes;
@@ -281,7 +267,6 @@ public:
         FF::FloatConverter::optProp(&eta, "eta", opts) || FF::IntConverter::optProp(&top_k, "topK", opts));
   }
 };
-#endif
 } // namespace DnnBindings
 
 #endif

@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import cv, { Mat } from '@u4/opencv4nodejs';
+import cv, { Mat } from '@pkboom/opencv-nodejs';
 import { getResourcePath, wait4key } from './utils.js';
 
 async function main() {
   if (!cv.xmodules || !cv.xmodules.face) {
-    console.error(`exiting: opencv4nodejs (${cv.version.major}.${cv.version.minor}) compiled without face module`);
+    console.error(`exiting: opencv-nodejs (${cv.version.major}.${cv.version.minor}) compiled without face module`);
     return;
   }
 

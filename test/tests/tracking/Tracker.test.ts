@@ -17,8 +17,6 @@ const expectImplementsMethods = (tracker: TrackerBoosting | TrackerMedianFlow | 
 if (toTest.tracking) {
   const {
     cv,
-    cvVersionGreaterEqual,
-    cvVersionEqual,
     getTestImg,
   } = getTestContext();
 
@@ -68,20 +66,14 @@ if (toTest.tracking) {
           expect(() => newTracker().update()).to.throw('Tracker::Update - Error: expected argument 0 to be of type');
         });
 
-        // update test for TrackerTLD for 3.1.0 and 3.2.0 seem to not finish
-        if (!(
-          (cvVersionEqual(3, 1, 0) || cvVersionEqual(3, 2, 0))
-          && trackerName === 'TrackerTLD'
-        )) {
-          it('returns bounding box', () => {
-            const tracker = newTracker();
-            tracker.init(getTestImg2(), new cv.Rect(0, 0, 10, 10));
-            const rect = tracker.update(getTestImg2());
-            if (rect !== null) {
-              expect(rect).to.be.instanceOf(cv.Rect);
-            }
-          });
-        }
+        it('returns bounding box', () => {
+          const tracker = newTracker();
+          tracker.init(getTestImg2(), new cv.Rect(0, 0, 10, 10));
+          const rect = tracker.update(getTestImg2());
+          if (rect !== null) {
+            expect(rect).to.be.instanceOf(cv.Rect);
+          }
+        });
       });
 
       describe('getModel', () => {
@@ -99,28 +91,16 @@ if (toTest.tracking) {
     'TrackerTLD',
   ];
 
-  const hasCSRT = cvVersionGreaterEqual(3, 4, 1);
-  const hasMOSSE = cvVersionGreaterEqual(3, 4, 0);
-  const hasKCF = cvVersionGreaterEqual(3, 1, 0);
+  trackerNames.push('TrackerKCF');
 
-  if (hasKCF) {
-    trackerNames.push('TrackerKCF');
-  }
-
-  if (cvVersionGreaterEqual(3, 2, 0)) {
-    // trackerNames.push('TrackerGOTURN'); TODO: sample goturn.prototxt
-  }
-  if (hasCSRT) {
-    trackerNames.push('TrackerCSRT');
-  }
-  if (hasMOSSE) {
-    trackerNames.push('TrackerMOSSE');
-  }
+  // trackerNames.push('TrackerGOTURN'); TODO: sample goturn.prototxt
+  trackerNames.push('TrackerCSRT');
+  trackerNames.push('TrackerMOSSE');
   trackerNames.forEach((trackerName) => {
     generateTrackerTests(trackerName);
   });
 
-  (cvVersionGreaterEqual(3, 1, 0) ? describe : describe.skip)('MultiTracker', () => {
+  describe('MultiTracker', () => {
     describe('add', () => {
       it('addMIL', () => {
         const tracker = new cv.MultiTracker();
@@ -151,21 +131,17 @@ if (toTest.tracking) {
         const ret = tracker.addKCF(getTestImg(), new cv.Rect(0, 0, 10, 10));
         expect(ret).to.true;
       });
-      if (hasCSRT) {
-        it('addCSRT', () => {
-          const tracker = new cv.MultiTracker();
-          const ret = tracker.addCSRT(getTestImg(), new cv.Rect(0, 0, 10, 10));
-          expect(ret).to.true;
-        });
-      }
+      it('addCSRT', () => {
+        const tracker = new cv.MultiTracker();
+        const ret = tracker.addCSRT(getTestImg(), new cv.Rect(0, 0, 10, 10));
+        expect(ret).to.true;
+      });
 
-      if (hasMOSSE) {
-        it('addMOSSE', () => {
-          const tracker = new cv.MultiTracker();
-          const ret = tracker.addMOSSE(getTestImg(), new cv.Rect(0, 0, 10, 10));
-          expect(ret).to.true;
-        });
-      }
+      it('addMOSSE', () => {
+        const tracker = new cv.MultiTracker();
+        const ret = tracker.addMOSSE(getTestImg(), new cv.Rect(0, 0, 10, 10));
+        expect(ret).to.true;
+      });
     });
 
     describe('update', () => {
@@ -178,19 +154,10 @@ if (toTest.tracking) {
         const tracker = new cv.MultiTracker();
         const methods0 = ['addMIL', 'addBOOSTING', 'addMEDIANFLOW', 'addTLD', 'addKCF'] as const;
         const methods = [...methods0] as Array <typeof methods0[number] | 'addCSRT' | 'addMOSSE'>;
-        if (hasKCF) {
-          methods.push('addKCF');
-        }
 
-        // if (cvVersionGreaterEqual(3, 2, 0)) {
-        //   methods.push('addGOTURN');
-        // }
-        if (hasCSRT) {
-          methods.push('addCSRT');
-        }
-        if (hasMOSSE) {
-          methods.push('addMOSSE');
-        }
+        // methods.push('addGOTURN');
+        methods.push('addCSRT');
+        methods.push('addMOSSE');
 
         methods.forEach((addMethod) => {
           tracker[addMethod](getTestImg(), new cv.Rect(0, 0, 10, 10));

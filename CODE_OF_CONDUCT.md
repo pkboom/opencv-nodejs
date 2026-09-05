@@ -1,4 +1,4 @@
-# @u4/opencv4nodejs Code of Conduct
+# @pkboom/opencv-nodejs Code of Conduct
 
 ## 1. Our Pledge
 

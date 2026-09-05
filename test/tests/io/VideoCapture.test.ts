@@ -1,12 +1,12 @@
  
-import { VideoCapture } from '@u4/opencv4nodejs';
+import { VideoCapture } from '@pkboom/opencv-nodejs';
 import { expect } from 'chai';
 import path from 'path';
 import { assertMetaData } from '../../utils/matTestUtils';
 import { getTestContext } from '../model';
 import toTest from '../toTest';
 
-if (toTest.io && !process.env.DOCKER_BUILD && !process.env.BINDINGS_DEBUG) {
+if (toTest.io && !process.env.BINDINGS_DEBUG) {
   const { cv, getTestVideoPath } = getTestContext();
 
   describe('constructor', () => {
@@ -52,20 +52,21 @@ if (toTest.io && !process.env.DOCKER_BUILD && !process.env.BINDINGS_DEBUG) {
     });
   });
 
+  const expectSeekedNear = (cap: VideoCapture, requestedMsec: number) => {
+    const msec = cap.get(cv.CAP_PROP_POS_MSEC);
+    const frameIntervalMsec = 1000 / cap.get(cv.CAP_PROP_FPS);
+    expect(Math.abs(msec - requestedMsec)).to.be.at.most(
+      frameIntervalMsec,
+      `seeking to ${requestedMsec}ms landed at ${msec}ms, more than one frame (${frameIntervalMsec}ms) away`,
+    );
+  };
+
   describe('VideoCapture set', () => {
     it(`should set properties ${getTestVideoPath()}`, () => {
       const cap = new cv.VideoCapture(getTestVideoPath());
       const wasSet = cap.set(cv.CAP_PROP_POS_MSEC, 1000);
-      const msec = cap.get(cv.CAP_PROP_POS_MSEC) | 0;
-      // depending of openCV version, result can be 83 or 1001
-      if (msec === 83) { // openCV 3.4.6 and below
-        expect(msec).to.equal(83);
-      } else if (msec === 1000) {
-        expect(msec).to.equal(1000);
-      } else { // openCV 3.4.8 and over
-        expect(msec).to.equal(1001, `OpenCV V3.4.8 and over (current V${cv.getVersionString()}), should return 1001`);
-      }
       expect(wasSet).to.equal(true);
+      expectSeekedNear(cap, 1000);
     });
   });
 
@@ -73,17 +74,8 @@ if (toTest.io && !process.env.DOCKER_BUILD && !process.env.BINDINGS_DEBUG) {
     it(`should set properties ${getTestVideoPath()}`, async () => {
       const cap = new cv.VideoCapture(getTestVideoPath());
       const wasSet = await cap.setAsync(cv.CAP_PROP_POS_MSEC, 1000);
-      // depending of openCV version, result can be 83 or 1001
-      const msec = cap.get(cv.CAP_PROP_POS_MSEC) | 0;
-      if (msec === 83) { // openCV 3.4.6 and below
-        expect(msec).to.equal(83);
-      } else if (msec === 1001) { // openCV 3.7.0 +
-        expect(msec).to.equal(1001);
-      } else {
-        expect(msec).to.equal(1000);
-      }
       expect(wasSet).to.equal(true);
-      return true;
+      expectSeekedNear(cap, 1000);
     });
   });
 }

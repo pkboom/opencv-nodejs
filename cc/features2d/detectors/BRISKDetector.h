@@ -1,4 +1,5 @@
 #include "../FeatureDetector.h"
+#include "legacyDetectors.h"
 #include "macros.h"
 
 #ifndef __FF_BRISKDETECTOR_H__

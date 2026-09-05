@@ -676,7 +676,6 @@ public:
   }
 };
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
 struct FindEssentialMatWorker : public CatchCvExceptionWorker {
 public:
   cv::Mat self;
@@ -696,7 +695,13 @@ public:
   cv::Mat mask = cv::noArray().getMat();
 
   std::string executeCatchCvExceptionWorker() {
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
     E = cv::findEssentialMat(points1, points2, self, method, prob, threshold, mask);
+#else
+    // OpenCV 5 made maxIters an explicit parameter ahead of the output mask;
+    // 1000 is the iteration count 4.x used internally.
+    E = cv::findEssentialMat(points1, points2, self, method, prob, threshold, 1000, mask);
+#endif
     return "";
   }
 
@@ -770,9 +775,6 @@ public:
   }
 };
 
-#endif
-
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
 // since 4.0.0 cv::undistort has been moved from imgproc to calib3d
 class Undistort : public CvBinding {
 public:
@@ -789,7 +791,6 @@ public:
     };
   };
 };
-#endif
 
 } // namespace MatCalib3dBindings
 

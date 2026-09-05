@@ -113,10 +113,6 @@ public:
   static NAN_METHOD(CornerEigenValsAndVecsAsync);
   static NAN_METHOD(Integral);
   static NAN_METHOD(IntegralAsync);
-#if CV_VERSION_LOWER_THAN(4, 0, 0)
-  static NAN_METHOD(Undistort);
-  static NAN_METHOD(UndistortAsync);
-#endif
   static NAN_METHOD(GoodFeaturesToTrack);
   static NAN_METHOD(GoodFeaturesToTrackAsync);
   static NAN_METHOD(Blur);

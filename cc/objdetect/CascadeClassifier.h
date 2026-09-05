@@ -2,9 +2,9 @@
 #include "Mat.h"
 #include "NativeNodeUtils.h"
 #include "Rect.h"
+#include "legacyObjdetect.h"
 #include "macros.h"
 #include <opencv2/core.hpp>
-#include <opencv2/objdetect.hpp>
 
 #ifndef __FF_CASCADECLASSIFIER_H__
 #define __FF_CASCADECLASSIFIER_H__

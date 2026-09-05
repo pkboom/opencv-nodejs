@@ -1,8 +1,6 @@
 #include "macros.h"
 #include <opencv2/tracking.hpp>
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 #ifndef __FF_TRACKERKCFPARAMS_H__
 #define __FF_TRACKERKCFPARAMS_H__
 
@@ -28,14 +26,10 @@ public:
   FF_ACCESSORS(desc_pca, FF::UintConverter);
   FF_ACCESSORS(desc_npca, FF::UintConverter);
 
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
   FF_ACCESSORS(detect_thresh, FF::FloatConverter);
-#endif
 
   static NAN_MODULE_INIT(Init);
   static NAN_METHOD(New);
 };
-
-#endif
 
 #endif

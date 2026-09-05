@@ -3,7 +3,7 @@
  * For more detail: https://www.pyimagesearch.com/2018/11/12/yolo-object-detection-with-opencv/
  */
 import fs from "fs";
-import { Mat, Net, Rect } from '@u4/opencv4nodejs';
+import { Mat, Net, Rect } from '@pkboom/opencv-nodejs';
 import { cv, getCachedFile, runVideoDetection } from './utils.js';
 
 class dnnDarknetYOLORealTimeObjectDetection {
@@ -96,7 +96,7 @@ class dnnDarknetYOLORealTimeObjectDetection {
 
   async run() {
     if (!cv.xmodules || !cv.xmodules.dnn) {
-      console.error(`exiting: opencv4nodejs (${cv.version.major}.${cv.version.minor}) compiled without dnn module`);
+      console.error(`exiting: opencv-nodejs (${cv.version.major}.${cv.version.minor}) compiled without dnn module`);
       return;
     }
 

@@ -13,7 +13,7 @@ type Mutable<T> = {
 };
 
 if (toTest.tracking) {
-  const { cv, cvVersionGreaterEqual } = getTestContext();
+  const { cv } = getTestContext();
 
   it('TrackerBoostingParams', () => {
     const params: Mutable<TrackerBoostingParams> = {
@@ -29,7 +29,7 @@ if (toTest.tracking) {
     assertPropsWithValue(trackerParams, params);
   });
 
-  (cvVersionGreaterEqual(3, 1, 0) ? it : it.skip)('TrackerKCFParams', () => {
+  it('TrackerKCFParams', () => {
     const params: TrackerKCFParams = {
       sigma: 0.9,
       lambda: 0.8,
@@ -54,7 +54,7 @@ if (toTest.tracking) {
     assertPropsWithValue(trackerParams, params as any, floatSafe);
   });
 
-  (cvVersionGreaterEqual(3, 4, 1) ? it : it.skip)('TrackerCSRTParams', () => {
+  it('TrackerCSRTParams', () => {
     const params: Mutable<TrackerCSRTParams> = {
       admm_iterations: 22,
       background_ratio: 3,
@@ -83,9 +83,7 @@ if (toTest.tracking) {
       weights_lr: 0.03,
       window_function: 'kaiser',
     };
-    if (cvVersionGreaterEqual(3, 4, 4)) {
-      params.psr_threshold = 0.4;
-    }
+    params.psr_threshold = 0.4;
 
     const trackerParams: Mutable<TrackerCSRTParams> = new cv.TrackerCSRTParams();
     Object.keys(params).forEach((param: keyof TrackerCSRTParams) => { (trackerParams as any)[param] = params[param]; });

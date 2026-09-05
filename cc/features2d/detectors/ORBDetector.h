@@ -17,7 +17,6 @@ public:
     return self;
   }
 
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   class ScoreType : public FF::EnumWrap<ScoreType> {
   public:
     typedef cv::ORB::ScoreType Type;
@@ -34,7 +33,6 @@ public:
       return {"HARRIS_SCORE", "FAST_SCORE"};
     }
   };
-#endif
 
   FF_GETTER_CUSTOM(maxFeatures, FF::IntConverter, self->getMaxFeatures());
   FF_GETTER_CUSTOM(scaleFactor, FF::FloatConverter, self->getScaleFactor());
@@ -42,11 +40,7 @@ public:
   FF_GETTER_CUSTOM(edgeThreshold, FF::IntConverter, self->getEdgeThreshold());
   FF_GETTER_CUSTOM(firstLevel, FF::IntConverter, self->getFirstLevel());
   FF_GETTER_CUSTOM(WTA_K, FF::IntConverter, self->getWTA_K());
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   FF_GETTER_CUSTOM(scoreType, ORBDetector::ScoreType::Converter, self->getScoreType());
-#else
-  FF_GETTER_CUSTOM(scoreType, FF::IntConverter, self->getScoreType());
-#endif
   FF_GETTER_CUSTOM(patchSize, FF::IntConverter, self->getPatchSize());
   FF_GETTER_CUSTOM(fastThreshold, FF::IntConverter, self->getFastThreshold());
 
@@ -65,11 +59,7 @@ public:
       auto edgeThreshold = opt<FF::IntConverter>("edgeThreshold", 31);
       auto firstLevel = opt<FF::IntConverter>("firstLevel", 0);
       auto WTA_K = opt<FF::IntConverter>("WTA_K", 2);
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
       auto scoreType = opt<ORBDetector::ScoreType::Converter>("scoreType", cv::ORB::HARRIS_SCORE);
-#else
-      auto scoreType = opt<FF::IntConverter>("scoreType", cv::ORB::HARRIS_SCORE);
-#endif
       auto patchSize = opt<FF::IntConverter>("patchSize", 31);
       auto fastThreshold = opt<FF::IntConverter>("fastThreshold", 20);
 

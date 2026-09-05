@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import { Contour, Moments } from '@u4/opencv4nodejs';
+import { Contour, Moments } from '@pkboom/opencv-nodejs';
 import { getTestContext } from '../model';
 import { generateAPITests } from '../../utils/generateAPITests';
 import toTest from '../toTest';
 
 if (toTest.imgproc) {
-  const { cv, cvVersionLowerThan, cvVersionGreaterEqual } = getTestContext();
+  const { cv } = getTestContext();
 
   // apparently cv version minor < 2 does not consider image borders
   const contoursData = [
@@ -146,10 +146,7 @@ if (toTest.imgproc) {
         const hullIndices = convexityDefectsContours[0].convexHullIndices();
         const defects = convexityDefectsContours[0].convexityDefects(hullIndices);
 
-        // TODO figure out whats wrong with defects in 3.0, 3.1
-        if (cvVersionGreaterEqual(3, 2, 0)) {
-          expect(defects).to.be.an('array').lengthOf(2);
-        }
+        expect(defects).to.be.an('array').lengthOf(2);
         defects.forEach((vec4) => {
           expect(vec4).to.have.property('w');
           expect(vec4).to.have.property('x');
@@ -200,7 +197,7 @@ if (toTest.imgproc) {
 
     // TODO min 5 points inputs cv exception
     describe('fitEllipse', () => {
-      (cvVersionLowerThan(3, 2, 0) ? it.skip : it)('should return fitEllipse', () => {
+      it('should return fitEllipse', () => {
         expect(rightBottomContour.fitEllipse()).to.be.instanceOf(cv.RotatedRect);
       });
     });
@@ -220,7 +217,7 @@ if (toTest.imgproc) {
     });
 
     describe('matchShapes', () => {
-      const method = cvVersionGreaterEqual(4, 0, 0) ? cv.CONTOURS_MATCH_I1 : cv.CV_CONTOURS_MATCH_I1;
+      const method = cv.CONTOURS_MATCH_I1;
       it('should return zero for same shapes', () => {
         const similarity = leftmostContour.matchShapes(leftmostContour, method);
         expect(similarity).to.equal(0);

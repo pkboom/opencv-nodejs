@@ -4,8 +4,6 @@
 
 #include "MultiTracker.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 Nan::Persistent<v8::FunctionTemplate> MultiTracker::constructor;
 
 NAN_MODULE_INIT(MultiTracker::Init) {
@@ -21,12 +19,8 @@ NAN_MODULE_INIT(MultiTracker::Init) {
   Nan::SetPrototypeMethod(ctor, "addMEDIANFLOW", MultiTracker::AddMEDIANFLOW);
   Nan::SetPrototypeMethod(ctor, "addTLD", MultiTracker::AddTLD);
   Nan::SetPrototypeMethod(ctor, "addKCF", MultiTracker::AddKCF);
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
   Nan::SetPrototypeMethod(ctor, "addMOSSE", MultiTracker::AddTLD);
-#endif
-#if CV_VERSION_GREATER_EQUAL(3, 4, 1)
   Nan::SetPrototypeMethod(ctor, "addCSRT", MultiTracker::AddKCF);
-#endif
   Nan::SetPrototypeMethod(ctor, "update", MultiTracker::Update);
 
   Nan::Set(target, FF::newString("MultiTracker"), FF::getFunction(ctor));
@@ -55,10 +49,8 @@ NAN_METHOD(MultiTracker::AddMIL) {
   }
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   cv::Ptr<cv::legacy::Tracker> type = cv::legacy::TrackerMIL::create();
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  cv::Ptr<cv::Tracker> type = cv::TrackerMIL::create();
 #else
-  const std::string type("MIL");
+  cv::Ptr<cv::Tracker> type = cv::TrackerMIL::create();
 #endif
   bool ret = MultiTracker::unwrapSelf(info)->add(type, image, boundingBox);
   info.GetReturnValue().Set(Nan::New(ret));
@@ -74,10 +66,8 @@ NAN_METHOD(MultiTracker::AddBOOSTING) {
   }
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   cv::Ptr<cv::legacy::Tracker> type = cv::legacy::TrackerBoosting::create();
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  cv::Ptr<cv::Tracker> type = cv::TrackerBoosting::create();
 #else
-  const std::string type("BOOSTING");
+  cv::Ptr<cv::Tracker> type = cv::TrackerBoosting::create();
 #endif
   bool ret = MultiTracker::unwrapSelf(info)->add(type, image, boundingBox);
   info.GetReturnValue().Set(Nan::New(ret));
@@ -93,10 +83,8 @@ NAN_METHOD(MultiTracker::AddMEDIANFLOW) {
   }
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   cv::Ptr<cv::legacy::Tracker> type = cv::legacy::TrackerMedianFlow::create();
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  cv::Ptr<cv::Tracker> type = cv::TrackerMedianFlow::create();
 #else
-  const std::string type("MEDIANFLOW");
+  cv::Ptr<cv::Tracker> type = cv::TrackerMedianFlow::create();
 #endif
   bool ret = MultiTracker::unwrapSelf(info)->add(type, image, boundingBox);
   info.GetReturnValue().Set(Nan::New(ret));
@@ -112,10 +100,8 @@ NAN_METHOD(MultiTracker::AddTLD) {
   }
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   cv::Ptr<cv::legacy::Tracker> type = cv::legacy::TrackerTLD::create();
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  cv::Ptr<cv::Tracker> type = cv::TrackerTLD::create();
 #else
-  const std::string type("TLD");
+  cv::Ptr<cv::Tracker> type = cv::TrackerTLD::create();
 #endif
   bool ret = MultiTracker::unwrapSelf(info)->add(type, image, boundingBox);
   info.GetReturnValue().Set(Nan::New(ret));
@@ -131,10 +117,8 @@ NAN_METHOD(MultiTracker::AddKCF) {
   }
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
   cv::Ptr<cv::legacy::Tracker> type = cv::legacy::TrackerKCF::create();
-#elif CV_VERSION_GREATER_EQUAL(3, 3, 0)
-  cv::Ptr<cv::Tracker> type = cv::TrackerKCF::create();
 #else
-  const std::string type("KCF");
+  cv::Ptr<cv::Tracker> type = cv::TrackerKCF::create();
 #endif
   bool ret = MultiTracker::unwrapSelf(info)->add(type, image, boundingBox);
   info.GetReturnValue().Set(Nan::New(ret));
@@ -151,7 +135,6 @@ NAN_METHOD(MultiTracker::Update) {
   MultiTracker::unwrapSelf(info)->update(image, rects);
   info.GetReturnValue().Set(Rect::ArrayConverter::wrap(rects));
 }
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
 
 NAN_METHOD(MultiTracker::AddMOSSE) {
   FF::TryCatch tryCatch("MultiTracker::AddMOSSE");
@@ -170,9 +153,6 @@ NAN_METHOD(MultiTracker::AddMOSSE) {
   info.GetReturnValue().Set(Nan::New(ret));
 }
 
-#endif
-#if CV_VERSION_GREATER_EQUAL(3, 4, 1)
-
 NAN_METHOD(MultiTracker::AddCSRT) {
   FF::TryCatch tryCatch("MultiTracker::AddCSRT");
   cv::Mat image;
@@ -189,8 +169,5 @@ NAN_METHOD(MultiTracker::AddCSRT) {
   bool ret = MultiTracker::unwrapSelf(info)->add(type, image, boundingBox);
   info.GetReturnValue().Set(Nan::New(ret));
 }
-#endif
-
-#endif
 
 #endif

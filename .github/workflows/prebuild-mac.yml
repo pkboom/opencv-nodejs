@@ -5,25 +5,24 @@ on:
     branches: [ "master", "dev", "*" ]
     paths:
       - "cc/**"
-      - "install/**"
-      - "lib/**"
+      - "src/**"
+      - "bin/**"
       - "test/**"
       - "typings/**"
+      - "binding.gyp"
       - "package.json"
       - ".github/workflows/prebuild-mac.yml"
   pull_request:
     branches: [ "master" ]
     paths:
       - "cc/**"
-      - "install/**"
-      - "lib/**"
+      - "src/**"
+      - "bin/**"
       - "test/**"
       - "typings/**"
+      - "binding.gyp"
       - "package.json"
       - ".github/workflows/prebuild-mac.yml"
-
-env:
-  OPENCV4NODEJS_DISABLE_AUTOBUILD: 1
 
 permissions:
   contents: read
@@ -32,43 +31,48 @@ jobs:
   build:
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
-        opencv_version:
-          - 4
+        # `opencv` is OpenCV 5; `opencv@4` is the keg-only OpenCV 4 formula.
+        opencv_formula:
+          - opencv@4
+          - opencv
         node_version:
-          # - 16
-          # - 18
-          # - 20
-          - 22
+          - 24
+          - 26
 
     steps:
     - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@v3
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.3.0
+        version: 10
     - name: Install Node.js ${{ matrix.node_version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node_version }}
         cache: 'pnpm'
 
-    - name: Install OpenCV ${{ matrix.opencv_version }}
-      run: |
-        brew install opencv@${{ matrix.opencv_version }}
+    - name: Install ${{ matrix.opencv_formula }}
+      run: brew install ${{ matrix.opencv_formula }}
 
-    - name: run pnpm install
-      run: pnpm install --frozen-lockfile
+    # Skip lifecycle scripts: the addon is built explicitly below, after the
+    # TypeScript in this checkout has been compiled.
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile --ignore-scripts
 
-    - name: pnpm run prepack
-      run: pnpm run prepack
+    - name: Compile TypeScript
+      run: pnpm run build
 
-    - name: build native code
-      run: npx node-gyp rebuild
+    - name: Show detected OpenCV
+      run: node bin/install.js info
 
-    - name: install deps in test
+    - name: Build native code
+      run: node bin/install.js rebuild
+
+    - name: Install test dependencies
       working-directory: ./test
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --no-frozen-lockfile
 
-    - name: run test-appveyor test
+    - name: Run tests
       working-directory: ./test
       run: pnpm run test-appveyor

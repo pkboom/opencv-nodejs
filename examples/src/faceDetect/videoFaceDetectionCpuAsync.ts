@@ -1,4 +1,4 @@
-import type { Mat, Rect } from '@u4/opencv4nodejs';
+import type { Mat, Rect } from '@pkboom/opencv-nodejs';
 import { cv, getResourcePath } from '../utils.js';
 import { runVideoFaceDetectionAsync } from './commons.js';
 

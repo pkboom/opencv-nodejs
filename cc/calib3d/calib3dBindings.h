@@ -429,7 +429,13 @@ public:
   }
 
   std::string executeCatchCvExceptionWorker() {
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
     E = cv::findEssentialMat(points1, points2, focal, pp, method, prob, threshold, mask);
+#else
+    // OpenCV 5 made maxIters an explicit parameter ahead of the output mask;
+    // 1000 is the iteration count 4.x used internally.
+    E = cv::findEssentialMat(points1, points2, focal, pp, method, prob, threshold, 1000, mask);
+#endif
     return "";
   }
 
@@ -613,7 +619,6 @@ public:
   }
 };
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
 struct SampsonDistanceWorker : public CatchCvExceptionWorker {
 public:
   cv::Vec2d pt1;
@@ -694,9 +699,7 @@ public:
         FF::IntConverter::optProp(&flags, "flags", opts) || TermCriteria::Converter::optProp(&criteria, "criteria", opts));
   }
 };
-#endif
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
 struct CalibrateCameraExtendedWorker : public CalibrateCameraWorker {
 public:
   cv::Mat stdDeviationsIntrinsics;
@@ -777,9 +780,7 @@ struct EstimateAffinePartial2DWorker : public EstimateAffine2DWorker {
     return "";
   }
 };
-#endif
 
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
 struct SolveP3PWorker : public SolvePxPWorker {
 public:
   int flags = cv::SOLVEPNP_P3P;
@@ -809,9 +810,7 @@ public:
         FF::IntConverter::optArg(4, &flags, info));
   }
 };
-#endif
 
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
 // since 4.0.0 cv::undistortPoints has been moved from imgproc to calib3d
 class UndistortPoints : public CvBinding {
 public:
@@ -829,7 +828,6 @@ public:
     };
   };
 };
-#endif
 
 } // namespace Calib3dBindings
 

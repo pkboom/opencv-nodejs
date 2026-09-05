@@ -1,21 +1,18 @@
 {
 	"targets": [{
-		"target_name": "opencv4nodejs",
-		"defines": [
-			"<!@(node ./bin/install.js OPENCV4NODEJS_DEFINES)",
-		],
+		"target_name": "opencv_nodejs",
 		"include_dirs" : [
-			"<!@(node ./bin/install.js OPENCV4NODEJS_INCLUDES)",
+			"<!@(node ./bin/install.js OPENCVNODEJS_INCLUDES)",
 			"cc",
 			"cc/core",
 			"<!(node -e \"require('nan')\")",
 			"cc/native-node-utils",
 		],
 		"libraries": [
-			"<!@(node ./bin/install.js OPENCV4NODEJS_LIBRARIES)",
+			"<!@(node ./bin/install.js OPENCVNODEJS_LIBRARIES)",
 		],
 		"sources": [
-			"cc/opencv4nodejs.cc",
+			"cc/opencv_nodejs.cc",
 			"cc/CustomMatAllocator.cc",
 			"cc/ExternalMemTracking.cc",
 			"cc/core/core.cc",
@@ -122,14 +119,14 @@
 			"cc/highgui/highguiConstants.cc",
 		],
 		"cflags" : [
-			"-std=c++17",
+			"-std=c++20",
 		],
 		"cflags!" : [
-			"-std=c++17",
+			"-std=c++20",
 			"-fno-exceptions",
 		],
 		"cflags_cc!": [
-			"-std=c++17",
+			"-std=c++20",
 			"-fno-rtti",
 			"-fno-exceptions",
 		],
@@ -138,11 +135,12 @@
 		],
 		"xcode_settings": {
 			"OTHER_CFLAGS": [
-				"-std=c++17",
+				"-std=c++20",
 				"-stdlib=libc++"
 			],
-			"GCC_ENABLE_CPP_EXCEPTIONS": "YES",
-			"MACOSX_DEPLOYMENT_TARGET": "11.0"
+			"CLANG_CXX_LANGUAGE_STANDARD": "c++20",
+			"CLANG_CXX_LIBRARY": "libc++",
+			"GCC_ENABLE_CPP_EXCEPTIONS": "YES"
 		},
 
 		"conditions": [
@@ -157,21 +155,19 @@
 				"msvs_settings": {
 					"VCCLCompilerTool": {
 						"ExceptionHandling": "2",
-						"RuntimeLibrary": "2"
+						"RuntimeLibrary": "2",
+						"AdditionalOptions": [
+							"/std:c++20"
+						]
 					},
 				}
 			}],
 	        ["OS==\"mac\"",
 	          {
 				 "cflags": [
-	                 "-std=c++17",
+	                 "-std=c++20",
     	             "-Wno-error=deprecated-declarations"
 	            ],
-	            "link_settings": {
-	              "libraries": [
-					"-Wl,-rpath,@loader_path/../../../opencv-build/opencv/build/lib"
-	              ],
-	            }
 	          }
 	        ]
 		],

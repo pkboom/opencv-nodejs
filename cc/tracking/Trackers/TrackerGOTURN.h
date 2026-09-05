@@ -1,9 +1,11 @@
 #include "../Tracker.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
-
 #ifndef __FF_TRACKERGOTURN_H__
 #define __FF_TRACKERGOTURN_H__
+
+// OpenCV 5 removed cv::TrackerGOTURN; there is no replacement, so the binding
+// only exists on 4.x.
+#if CV_VERSION_LOWER_THAN(5, 0, 0)
 
 #if CV_VERSION_GREATER_EQUAL(4, 5, 2)
 class TrackerGOTURN : public FF::ObjectWrapBase<TrackerGOTURN>, public Nan::ObjectWrap {
@@ -31,3 +33,4 @@ public:
 #endif
 
 #endif
+

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import {
   CalibrationMatrixValues, CorrectMatchesRet, DecomposeEssentialMatRet, DecomposeHomographyMatRet, DecomposeProjectionMatrixRet, Mat, OptimalNewCameraMatrix, RqDecomp3x3Ret, StereoRectify, Vec3,
-} from '@u4/opencv4nodejs';
+} from '@pkboom/opencv-nodejs';
 import { getTestContext } from '../model.js';
 import { assertMetaData } from '../../utils/matTestUtils.js';
 import { expectToBeVec2, expectToBeVec3, expectToBeVec4 } from '../../utils/testUtils.js';
@@ -11,8 +11,6 @@ import toTest from '../toTest.js';
 if (toTest.calib3d) {
   const {
     cv,
-    cvVersionLowerThan,
-    cvVersionGreaterEqual,
   } = getTestContext();
 
   const imagePoints = [
@@ -254,42 +252,6 @@ if (toTest.calib3d) {
       });
     });
 
-    // TODO: figure out why rectify3Collinear is failing with docker and 3.4.3+
-    ((!process.env.DOCKER_BUILD && !process.env.BINDINGS_DEBUG && cvVersionLowerThan(3, 3, 0)) ? describe : describe.skip)('rectify3Collinear', () => {
-      const alpha = 0;
-      const flags = cv.CALIB_ZERO_DISPARITY;
-
-      generateAPITests({
-        getDut: () => cv.Mat.eye(3, 3, cv.CV_64F),
-        methodName: 'rectify3Collinear',
-        methodNameSpace: 'Mat',
-        getRequiredArgs: () => ([
-          distCoefficients,
-          cv.Mat.eye(3, 3, cv.CV_64F),
-          distCoefficients,
-          cv.Mat.eye(3, 3, cv.CV_64F),
-          distCoefficients,
-          imagePoints,
-          imagePoints,
-          imageSize,
-          R,
-          T,
-          R,
-          T,
-          alpha,
-          imageSize,
-          flags,
-        ]),
-        expectOutput: (res) => {
-          expectOutput(res);
-          expect(res).to.have.property('returnValue').to.be.a('number');
-          expect(res).to.have.property('R3').to.be.instanceOf(cv.Mat);
-          assertMetaData(res.R3)(3, 3, cv.CV_64F);
-          expect(res).to.have.property('P3').to.be.instanceOf(cv.Mat);
-          assertMetaData(res.P3)(3, 4, cv.CV_64F);
-        },
-      });
-    });
   });
 
   describe('getOptimalNewCameraMatrix', () => {
@@ -474,7 +436,7 @@ if (toTest.calib3d) {
     });
   });
 
-  (cvVersionLowerThan(3, 1, 0) ? describe.skip : describe)('findEssentialMat', () => {
+  describe('findEssentialMat', () => {
     const expectOutput = (res: { E: Mat, mask: Mat }) => {
       expect(res).to.have.property('E').to.be.instanceOf(cv.Mat);
       assertMetaData(res.E)(3, 3, cv.CV_64F);
@@ -498,7 +460,7 @@ if (toTest.calib3d) {
     });
   });
 
-  (cvVersionLowerThan(3, 1, 0) ? describe.skip : describe)('recoverPose', () => {
+  describe('recoverPose', () => {
     const expectOutput = (res: { returnValue: number, R: Mat, T: Vec3 }) => {
       expect(res).to.have.property('returnValue').to.be.a('Number');
       expect(res).to.have.property('R').to.be.instanceOf(cv.Mat);
@@ -525,21 +487,19 @@ if (toTest.calib3d) {
     });
   });
 
-  if (cvVersionGreaterEqual(4, 0, 0)) {
-    describe('undistort', () => {
-      const cameraMatrix = new cv.Mat([[1, 0, 10], [0, 1, 10], [0, 0, 1]], cv.CV_32F);
-      const distCoeffs = new cv.Mat([[0.1, 0.1, 1, 1]], cv.CV_32F);
-      const cameraMatrixNew = new cv.Mat([[1, 0, 10], [0, 1, 10], [0, 0, 1]], cv.CV_32F);
-      generateAPITests({
-        getDut: () => new cv.Mat(20, 20, cv.CV_8U, 0.5),
-        methodName: 'undistort',
-        methodNameSpace: 'Mat',
-        getRequiredArgs: () => ([cameraMatrix, distCoeffs]),
-        getOptionalArg: () => cameraMatrixNew,
-        expectOutput: (res) => {
-          expect(res).to.be.instanceOf(cv.Mat);
-        },
-      });
+  describe('undistort', () => {
+    const cameraMatrix = new cv.Mat([[1, 0, 10], [0, 1, 10], [0, 0, 1]], cv.CV_32F);
+    const distCoeffs = new cv.Mat([[0.1, 0.1, 1, 1]], cv.CV_32F);
+    const cameraMatrixNew = new cv.Mat([[1, 0, 10], [0, 1, 10], [0, 0, 1]], cv.CV_32F);
+    generateAPITests({
+      getDut: () => new cv.Mat(20, 20, cv.CV_8U, 0.5),
+      methodName: 'undistort',
+      methodNameSpace: 'Mat',
+      getRequiredArgs: () => ([cameraMatrix, distCoeffs]),
+      getOptionalArg: () => cameraMatrixNew,
+      expectOutput: (res) => {
+        expect(res).to.be.instanceOf(cv.Mat);
+      },
     });
-  }
+  });
 }

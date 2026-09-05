@@ -1,4 +1,4 @@
-import cv from '@u4/opencv4nodejs';
+import cv from '@pkboom/opencv-nodejs';
 import { getResourcePath, wait4key } from '../utils.js';
 
 const findWaldo = async () => {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import cv from '@u4/opencv4nodejs';
+import cv from '@pkboom/opencv-nodejs';
 
 describe('static Min/Max methods added on 2023-03-03', () => {
   const mat1 = new cv.Mat([

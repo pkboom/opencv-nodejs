@@ -4,8 +4,6 @@
 
 #include "SuperpixelLSC.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 Nan::Persistent<v8::FunctionTemplate> SuperpixelLSC::constructor;
 
 NAN_MODULE_INIT(SuperpixelLSC::Init) {
@@ -62,7 +60,5 @@ NAN_METHOD(SuperpixelLSC::Iterate) {
   self->numCalculatedSuperpixels = self->self->getNumberOfSuperpixels();
   self->self->getLabelContourMask(self->labelContourMask, false);
 }
-
-#endif
 
 #endif // HAVE_OPENCV_XIMGPROC

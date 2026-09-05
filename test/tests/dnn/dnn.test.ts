@@ -6,7 +6,7 @@ import { getTestContext } from '../model';
 import toTest from '../toTest';
 
 if (toTest.dnn) {
-  const { cv, getTestImg, cvVersionGreaterEqual } = getTestContext();
+  const { cv, getTestImg } = getTestContext();
 
   describe('blobFromImage', () => {
     const expectOutput = (res: Mat) => {
@@ -70,23 +70,21 @@ if (toTest.dnn) {
     });
   });
 
-  if (cvVersionGreaterEqual(3, 4, 0)) {
-    describe('NMSBoxes', () => {
-      generateAPITests({
-        getDut: () => cv,
-        methodName: 'NMSBoxes',
-        hasAsync: false,
-        getRequiredArgs: () => ([
-          [new cv.Rect(0, 0, 1, 1)],
-          [1],
-          0.5,
-          0.4,
-        ]),
-        expectOutput: (res) => {
-          expect(res).to.be.instanceOf(Array);
-          expect(res[0]).to.be.equal(0);
-        },
-      });
+  describe('NMSBoxes', () => {
+    generateAPITests({
+      getDut: () => cv,
+      methodName: 'NMSBoxes',
+      hasAsync: false,
+      getRequiredArgs: () => ([
+        [new cv.Rect(0, 0, 1, 1)],
+        [1],
+        0.5,
+        0.4,
+      ]),
+      expectOutput: (res) => {
+        expect(res).to.be.instanceOf(Array);
+        expect(res[0]).to.be.equal(0);
+      },
     });
-  }
+  });
 }

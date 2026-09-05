@@ -38,10 +38,8 @@ NAN_METHOD(OCRHMMDecoder::New) {
       worker.vocabulary,
       worker.transition_probabilities_table,
       worker.emission_probabilities_table
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
       ,
       worker.mode
-#endif
       ));
 
   self->Wrap(info.Holder());

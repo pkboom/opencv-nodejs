@@ -1,5 +1,4 @@
-import cv from '@u4/opencv4nodejs';
-import { getTestContext } from './model';
+import cv from '@pkboom/opencv-nodejs';
 
 const modules = [
   'core', 'imgproc', 'calib3d', 'features2d', 'io',
@@ -39,12 +38,6 @@ if (process.env.APPVEYOR_BUILD) {
 }
 if (process.env.TEST_MODULE_LIST) {
   _builtModules = process.env.TEST_MODULE_LIST.split(',');
-}
-
-const ctxt = getTestContext();
-
-if (ctxt.cvVersionLowerThan(3, 3, 0)) {
-  _builtModules = _builtModules.filter((m) => m !== 'dnn');
 }
 
 toTest.core = toTest.core && cv.modules.core;

@@ -1,5 +1,16 @@
 # changelog
 
+## Version 8.0.0 (unreleased)
+- [breaking change] Renamed the package from `@pkboom/opencv4nodejs` to `@pkboom/opencv-nodejs`, and the GitHub repo from `pkboom/opencv4nodejs` to `pkboom/opencv-nodejs`. Consumers must update both their dependency (`npm uninstall @pkboom/opencv4nodejs && npm install @pkboom/opencv-nodejs`) and their import/require (`require('@pkboom/opencv4nodejs')` -> `require('@pkboom/opencv-nodejs')`).
+- [breaking change] Dropped OpenCV 3 support entirely. OpenCV 4 and OpenCV 5 are supported; the native addon now hard-fails to compile against anything older than OpenCV 4.
+- Added OpenCV 5 support.
+- [breaking change] Supported runtimes are now Node 24 and Node 26 (`engines.node` requires `>=24.0.0`).
+- Native code now builds with C++20.
+- [breaking change] Removed the autobuild-from-source path and the `@u4/opencv-build` dependency. OpenCV must now be installed from a system package manager (Homebrew, apt, Chocolatey); it is detected automatically at install time. Removed the `OPENCVNODEJS_DISABLE_AUTOBUILD`, `OPENCVNODEJS_AUTOBUILD_OPENCV_VERSION`, `OPENCVNODEJS_AUTOBUILD_FLAGS`, and `OPENCVNODEJS_AUTOBUILD_WITHOUT_CONTRIB` environment variables, and the `opencv-nodejs` build-configuration section in `package.json`.
+- [breaking change] Removed all build-from-source CLI flags (`--version`, `--cuda`, `--cudaArch`, `--nocontrib`, `--nobuild`, `--keepsource`, `--flags`, `--vscode`).
+- Removed all Docker support (Dockerfiles, docker-manifest script, the DockerHub publish workflow) and the `ci/` Docker-based test harness.
+- `cv.undistortPoints` / `Mat.undistort` were removed from the imgproc module (they were OpenCV-3-only bindings); the same functions remain available via the calib3d module, so the JS API is unchanged for OpenCV 4/5 users.
+
 ## Version 7.1.2
 - @see github
 

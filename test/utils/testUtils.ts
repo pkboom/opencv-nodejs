@@ -7,7 +7,7 @@ import {
   Vec2,
   Vec3,
   Vec4,
-} from '@u4/opencv4nodejs';
+} from '@pkboom/opencv-nodejs';
 
 export const assertError = (func: () => any, msg: string): void => {
   let errMsg = '';

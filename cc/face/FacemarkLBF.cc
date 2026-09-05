@@ -5,8 +5,6 @@
 #include "FacemarkLBF.h"
 #include "FacemarkLBFParams.h"
 
-#if CV_VERSION_GREATER_EQUAL(3, 4, 0)
-
 Nan::Persistent<v8::FunctionTemplate> FacemarkLBF::constructor;
 
 NAN_MODULE_INIT(FacemarkLBF::Init) {
@@ -37,7 +35,5 @@ NAN_METHOD(FacemarkLBF::New) {
 
   info.GetReturnValue().Set(info.Holder());
 };
-
-#endif
 
 #endif

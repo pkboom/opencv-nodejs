@@ -1,6 +1,6 @@
 #include "opencv_modules.h"
 
-#ifdef HAVE_OPENCV_FEATURES2D
+#ifdef HAVE_LEGACY_FEATURE_DETECTORS
 
 #include "AGASTDetector.h"
 
@@ -20,9 +20,7 @@ NAN_MODULE_INIT(AGASTDetector::Init) {
   Nan::SetAccessor(instanceTemplate, Nan::New("type").ToLocalChecked(), type_getter);
 
   Nan::Set(target, Nan::New("AGASTDetector").ToLocalChecked(), FF::getFunction(ctor));
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   DetectorType::init(target);
-#endif
 };
 
 struct NewWorker : CatchCvExceptionWorker {

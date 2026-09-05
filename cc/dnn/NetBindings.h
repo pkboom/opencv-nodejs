@@ -69,11 +69,9 @@ public:
   }
 
   bool unwrapOptionalArgs(Nan::NAN_METHOD_ARGS_TYPE info) {
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
     if (info[0]->IsArray()) {
       return FF::StringArrayConverter::optArg(0, &outBlobNames, info);
     }
-#endif
     return (
         FF::StringConverter::optArg(0, &outputName, info));
   }

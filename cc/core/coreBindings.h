@@ -166,7 +166,8 @@ public:
   cv::Scalar sum;
   void createBinding(std::shared_ptr<FF::Value<cv::Mat>> self) {
     this->self = self;
-    executeBinding = [=]() {
+    // `sum` is a member, so `this` must be captured explicitly under C++20.
+    executeBinding = [this, self]() {
       sum = cv::sum(self->ref());
     };
   };

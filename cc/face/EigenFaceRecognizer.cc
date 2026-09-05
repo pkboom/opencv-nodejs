@@ -30,11 +30,7 @@ NAN_METHOD(EigenFaceRecognizer::New) {
 
   EigenFaceRecognizer* self = new EigenFaceRecognizer();
   self->Wrap(info.Holder());
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
   self->faceRecognizer = cv::face::EigenFaceRecognizer::create(worker.num_components, worker.threshold);
-#else
-  self->faceRecognizer = cv::face::createEigenFaceRecognizer(worker.num_components, worker.threshold);
-#endif
   info.GetReturnValue().Set(info.Holder());
 };
 

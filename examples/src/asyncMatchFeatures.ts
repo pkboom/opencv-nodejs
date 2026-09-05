@@ -1,4 +1,4 @@
-import { FeatureDetector, Mat } from '@u4/opencv4nodejs';
+import { FeatureDetector, Mat } from '@pkboom/opencv-nodejs';
 import { cv, getResourcePath, wait4key } from './utils.js';
 
 const detectAndComputeAsync = (det: FeatureDetector, img: Mat) =>

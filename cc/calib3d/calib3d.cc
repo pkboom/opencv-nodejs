@@ -35,28 +35,20 @@ NAN_MODULE_INIT(Calib3d::Init) {
   Nan::SetMethod(target, "getValidDisparityROIAsync", GetValidDisparityROIAsync);
   Nan::SetMethod(target, "estimateAffine3D", EstimateAffine3D);
   Nan::SetMethod(target, "estimateAffine3DAsync", EstimateAffine3DAsync);
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
   Nan::SetMethod(target, "sampsonDistance", SampsonDistance);
   Nan::SetMethod(target, "sampsonDistanceAsync", SampsonDistanceAsync);
   Nan::SetMethod(target, "calibrateCamera", CalibrateCamera);
   Nan::SetMethod(target, "calibrateCameraAsync", CalibrateCameraAsync);
-#endif
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
   Nan::SetMethod(target, "calibrateCameraExtended", CalibrateCameraExtended);
   Nan::SetMethod(target, "calibrateCameraExtendedAsync", CalibrateCameraExtendedAsync);
   Nan::SetMethod(target, "estimateAffine2D", EstimateAffine2D);
   Nan::SetMethod(target, "estimateAffine2DAsync", EstimateAffine2DAsync);
   Nan::SetMethod(target, "estimateAffinePartial2D", EstimateAffinePartial2D);
   Nan::SetMethod(target, "estimateAffinePartial2DAsync", EstimateAffinePartial2DAsync);
-#endif
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
   Nan::SetMethod(target, "solveP3P", SolveP3P);
   Nan::SetMethod(target, "solveP3PAsync", SolveP3PAsync);
-#endif
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   Nan::SetMethod(target, "undistortPoints", UndistortPoints);
   Nan::SetMethod(target, "undistortPointsAsync", UndistortPointsAsync);
-#endif
 };
 
 NAN_METHOD(Calib3d::FindHomography) {
@@ -255,8 +247,6 @@ NAN_METHOD(Calib3d::EstimateAffine3DAsync) {
       info);
 }
 
-#if CV_VERSION_GREATER_EQUAL(3, 1, 0)
-
 NAN_METHOD(Calib3d::SampsonDistance) {
   FF::executeSyncBinding(
       std::make_shared<Calib3dBindings::SampsonDistanceWorker>(),
@@ -284,10 +274,6 @@ NAN_METHOD(Calib3d::CalibrateCameraAsync) {
       "Calib3d::CalibrateCameraAsync",
       info);
 }
-
-#endif
-
-#if CV_VERSION_GREATER_EQUAL(3, 2, 0)
 
 NAN_METHOD(Calib3d::CalibrateCameraExtended) {
   FF::executeSyncBinding(
@@ -330,9 +316,6 @@ NAN_METHOD(Calib3d::EstimateAffinePartial2DAsync) {
       "Calib3d::EstimateAffinePartial2DAsync",
       info);
 }
-#endif
-
-#if CV_VERSION_GREATER_EQUAL(3, 3, 0)
 
 NAN_METHOD(Calib3d::SolveP3P) {
   FF::executeSyncBinding(
@@ -348,9 +331,6 @@ NAN_METHOD(Calib3d::SolveP3PAsync) {
       info);
 }
 
-#endif
-
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
 NAN_METHOD(Calib3d::UndistortPoints) {
   FF::syncBinding<Calib3dBindings::UndistortPoints>("Calib3d", "UndistortPoints", info);
 }
@@ -358,6 +338,5 @@ NAN_METHOD(Calib3d::UndistortPoints) {
 NAN_METHOD(Calib3d::UndistortPointsAsync) {
   FF::asyncBinding<Calib3dBindings::UndistortPoints>("Calib3d", "UndistortPoints", info);
 }
-#endif
 
 #endif

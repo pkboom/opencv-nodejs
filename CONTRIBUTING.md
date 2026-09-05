@@ -15,7 +15,7 @@ The API is designed such that
 
 3: If the first argument of a function corresponds to one of the OpenCV classes (usually cv::Mat), the function binding should be exported as a global cv method as well as a class method of the wrapped class, to allow chaining of function calls such as: `mat.resizeToMax(500).toGray().mean()`.
 
-For example consider the following function signature from the official OpenCV 3 docs:
+For example consider the following function signature from the official OpenCV docs:
 
 ``` c++
 void GaussianBlur(InputArray src, OutputArray dst, Size ksize, double sigmaX, double sigmaY=0, int borderType=BORDER_DEFAULT)
@@ -276,15 +276,12 @@ I provided a step by step guide for implementing class bindings in this [tutoria
 
 ## CI
 
-For continous integration we use AppVeyor and Travis CI, which will run a rebuild of the package on Windows and Linux and run the unit tests for each of the maintained OpenCV versions. This ensures compatibility across the OpenCV versions as in some minor cases the OpenCV interface may have changed or new features have been added.
+Continuous integration runs on GitHub Actions, building and testing the addon on Linux (OpenCV from apt), macOS (OpenCV from Homebrew, both the `opencv` and `opencv@4` formulas), and Windows (OpenCV from Chocolatey), across the supported Node.js versions. This ensures compatibility across OpenCV 4 and OpenCV 5, as in some minor cases the OpenCV interface may have changed or new features have been added.
 
-The build task will be executed on every push to your working branch as well as every pull request before merging to the master branch. If you have docker set up on your local machine you can run the build tasks on your local machine via the provided npm scripts under ci/test.
-For example to execute a build for OpenCV 3.4.6 under node 18:
+These workflows run on every push and on every pull request before merging to the master branch. See `.github/workflows/` for the exact jobs. To reproduce a build locally, install OpenCV as the workflow does for your platform, then run:
 
 ``` bash
-# with contrib (OpenCV extra modules)
-npm run test 4.5.5-contrib 18
-
-# without contrib
-npm run test 4.5.5 11
+node bin/install.js info      # confirm OpenCV was detected
+node bin/install.js rebuild   # build the native addon
+cd test && pnpm install && pnpm run test
 ```

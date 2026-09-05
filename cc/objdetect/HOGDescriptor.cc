@@ -1,6 +1,6 @@
 #include "opencv_modules.h"
 
-#ifdef HAVE_OPENCV_OBJDETECT
+#ifdef HAVE_LEGACY_OBJDETECT
 
 #include "HOGDescriptor.h"
 #include "HOGDescriptorBindings.h"
@@ -51,9 +51,7 @@ NAN_MODULE_INIT(HOGDescriptor::Init) {
   Nan::SetPrototypeMethod(ctor, "load", Load);
 
   Nan::Set(target, FF::newString("HOGDescriptor"), FF::getFunction(ctor));
-#if CV_VERSION_GREATER_EQUAL(4, 0, 0)
   HistogramNormType::init(target);
-#endif
 };
 
 NAN_METHOD(HOGDescriptor::New) {
