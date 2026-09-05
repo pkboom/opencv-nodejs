@@ -50,5 +50,8 @@ jobs:
       # ships it. pnpm is not used here because only the npm CLI implements OIDC.
       - name: Verify npm supports trusted publishing
         run: npm --version
+      # --tag latest is explicit because the abandoned 7.1.2 is still on the
+      # registry and sorts above 1.x, which makes npm refuse to apply "latest"
+      # implicitly. Harmless to keep once 7.1.2 is unpublished.
       - name: publish to npmjs
-        run: npm publish --access public
+        run: npm publish --access public --tag latest
